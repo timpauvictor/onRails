@@ -16,6 +16,9 @@
 #  include <GL/glu.h>
 #  include <GL/freeglut.h>
 #endif
+//our includes
+#include "basicMathLibrary.h" 		//for 3D points and Vectors
+
 
 //float verts[8][3] = { {-1,-1,1}, {-1,1,1}, {1,1,1}, {1,-1,1}, {-1,-1,-1}, {-1,1,-1}, {1,1,-1}, {1,-1,-1} };
 //float cols[6][3] = { {1,0,0}, {0,1,1}, {1,1,0}, {0,1,0}, {0,0,1}, {1,0,1} };
