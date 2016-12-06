@@ -1,9 +1,6 @@
 /* CS 3GC3 - Simple lighting example
  * by R. Teather
- *
  */
-
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -17,12 +14,31 @@
 #  include <GL/freeglut.h>
 #endif
 //our includes
-#include "basicMathLibrary.h" 		//for 3D points and Vectors
+#include "basicMathLibrary.cpp" 		//for 3D points and Vectors
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+
+using namespace std; 
 
 
 //float verts[8][3] = { {-1,-1,1}, {-1,1,1}, {1,1,1}, {1,-1,1}, {-1,-1,-1}, {-1,1,-1}, {1,1,-1}, {1,-1,-1} };
 //float cols[6][3] = { {1,0,0}, {0,1,1}, {1,1,0}, {0,1,0}, {0,0,1}, {1,0,1} };
 float light_pos[] = {5,10,5,1};
+vector<point3D*> *cameraPos = new vector<point3D*>;
+vector<point3D*> *lookAtPos = new vector<point3D*>;
+vector<int> *stages = new vector<int>;
+int stageNumber = 0;
+int frameCounter = 0;
+//int lookAtCounter = 0;
+int cameraHeight = 1;
+bool first = true;
+
+int lookAtIndex = 0;
+int cameraIndex = 0;
+int cameraPosSize = 0;
 
 float pos[] = {0,1,0};
 
@@ -31,14 +47,26 @@ float angle = 0.0f;
 
 int height = 0;
 int width = 0;
-int max = 0;
+int max2 = 0;
 GLubyte *image_data;
 
 int side = 0;
 int up = 0;
 float ang = 0.0f;
 
+void insertPoint3D(point3D *p){
+	//printf("insert %f , %f , %f\n", p->x, p->y,p->z);
+	cameraPos->push_back(p);
+	//cameraPosSize++;
+	//printf("Insert, CameraPos Size: %i \n", cameraPosSize );
+}
 
+void insertPoint3DLookAt(point3D *p){
+	//printf("insert %f , %f , %f\n", p->x, p->y,p->z);
+	lookAtPos->push_back(p);
+	//lookAtCounter++;
+	//printf("Insert, CameraPos Size: %i \n", cameraPosSize );
+}
 
 void DrawHUD(){
 	glMatrixMode(GL_PROJECTION);
@@ -50,6 +78,13 @@ void DrawHUD(){
 	glPixelZoom(-1, 1);
 	glDrawPixels(width,height,GL_RGB, GL_UNSIGNED_BYTE, image_data);
 	glFlush(); 
+}
+
+void DrawFloor(){
+	glPushMatrix();
+		glScalef(100,0.5,100);
+		glutSolidCube(1);
+	glPopMatrix();
 }
 
 void Draw3DScene(){
@@ -70,21 +105,41 @@ void Draw3DScene(){
 	float m_spec[] = {0.8, 0.6, 0.6, 1.0};
 	float shiny = 32;*/
 
+	gluLookAt(cameraPos->at(cameraIndex)->x, cameraHeight, cameraPos->at(cameraIndex)->z,
+			  lookAtPos->at(lookAtIndex)->x,lookAtPos->at(lookAtIndex)->y,lookAtPos->at(lookAtIndex)->z ,
+			  0,1,0);
+	
 
-	gluLookAt(camPos[0], camPos[1], camPos[2], 0,0,0, 0,1,0);
-	glColor3f(1,1,1);
+	//gluLookAt(cameraPos->at(cameraIndex)->x, cameraPos->at(cameraIndex)->y, cameraPos->at(cameraIndex)->z, 0,0,0, 0,1,0);
+	
+	//gluLookAt(camPos[0], camPos[1] , camPos[2], 0,0,0, 0,1,0);
 
+	//glColor3f(1,1,1);
 
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+	DrawFloor();
+
+	/*glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
-
+	*/
 	glPushMatrix();
 		glTranslatef(side,up,0);
+		glTranslatef(0,2,0);
 		glRotatef(ang, 0,1,0);
 		glutSolidTeapot(1);
-		glColor3f(1,1,1);
+		glColor3f(0,1,0);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(-25,1,5);
+	glutSolidCube(1);
+	glPopMatrix();
+
+	glPushMatrix();
+		glColor3f(1,0,0);
+		glTranslatef(7,1,-15);
+		glutSolidSphere(1,50,50);
 
 	glPopMatrix();
 }
@@ -205,6 +260,35 @@ void keyboard(unsigned char key, int x, int y)
 			if(light_pos[1] > 0)
 				light_pos[1] -= 1;
 			break;
+		case 'x':
+			//printf("cameraIndex %i, Size: %i  \n",cameraIndex, cameraPos->size()-1 );
+			if(cameraIndex < cameraPos->size()-1){
+				cameraIndex++;
+			}
+			break;
+		case 'z':
+			if(first == true){
+				first = false;
+			}else{
+				if(stageNumber < stages->size() -1){
+					stageNumber++;
+				}
+			}
+			break;
+		case ' ':
+			if(cameraHeight == 1){
+				cameraHeight = 8;
+			}else{
+				cameraHeight = 1;
+			}
+			break;
+		case 'v':
+			if(lookAtIndex < lookAtPos->size()-1){
+				lookAtIndex++;
+			}else{
+				lookAtIndex = 0;
+			}
+			break;
 
 
 	}
@@ -245,6 +329,170 @@ void special(int key, int x, int y)
 	glutPostRedisplay();
 }
 
+/***
+Given the start point and end point locations, This method
+will interpolate steps number of location in between the start
+and end locations. (Giving a smooth animation)
+***/
+void getSlopeVector(point3D *start, point3D *end, int steps){
+	float x1 = start->x;
+	float x2 = end->x;
+	float y = start->y;
+
+	float z1 = start->z;
+	float z2 = end->z;
+
+	float run = (x2 -x1)/ (float) steps;
+	float rise = (z2 - z1)/ (float) steps;
+
+	//printf("%f\n", rise/steps);
+	//printf("%f\n", run/steps);
+
+
+	insertPoint3D(start);
+	frameCounter++;
+	//cameraIndex++;
+	//glutPostRedisplay();
+
+	for (int i = 0; i < steps; ++i)
+	{
+
+		point3D *p = new point3D(x1+run, y, z1+rise);
+		insertPoint3D(p);
+		x1 +=run;
+		z1 += rise;
+		frameCounter++;
+		//cameraIndex++;
+		//glutPostRedisplay();
+	}
+
+	insertPoint3D(end);
+	frameCounter++;
+	//printf("Frame Count: %i\n", frameCounter);
+	stages->push_back(frameCounter);
+	//cameraIndex++;
+	//glutPostRedisplay();
+	
+	//float incr = 0.1;
+	//if(x1 > x2)
+
+}
+
+//Splits string by a delimiter
+void split(const string &s, char delim, vector<string> &elems){
+	stringstream ss;
+	ss.str(s);
+	string item;
+	while(getline(ss, item, delim)){
+		elems.push_back(item);
+	}
+}
+
+//splits the string and returns as a vector
+vector<string> split(const string &s, char delim){
+	vector<string> elems;
+	split(s,delim, elems);
+	return elems;
+}
+
+//Load the positions of where the camera should be looking at
+void loadLookAtPosition(){
+	string line;
+	ifstream myfile ("lookAtPositions.txt");
+	if(myfile.is_open()){
+		//iterate through the file line by line
+		while(getline (myfile,line)){
+			vector<string> sub = split(line, ' ');
+			//insert each point into the vector of look at positions
+			if(sub.size() > 1){
+				point3D *p= new point3D(stoi(sub.at(0)),stoi(sub.at(1)),stoi(sub.at(2)));
+				insertPoint3DLookAt(p);
+			}
+		}
+
+	}else{
+		cout << "Unable to open file.";
+	}
+
+	/*point3D *origin = new point3D(0,0,0); 
+	insertPoint3DLookAt(origin);
+
+	point3D *p = new point3D(7,1,-15); 
+	insertPoint3DLookAt(p);
+
+	p = new point3D(-25,5,5); 
+	insertPoint3DLookAt(p);*/
+}
+
+//Load the camera positions from textfile
+void loadCameraPoints(){
+	string line;
+	ifstream myfile ("cameraPositions.txt");
+	if (myfile.is_open()){
+		point3D *start;
+		point3D *end;
+		bool first = true;
+
+		//iterate through the text file line by line
+		while(getline (myfile,line)){
+			//split the line into a vector
+			vector<string> sub = split(line, ' ');
+
+			if(sub.size() > 1){
+				//printf("%s %s %s \n", sub.at(0).c_str(), sub.at(1).c_str(), sub.at(2).c_str());
+				if(first == true){
+					//printf("Start 1: %s %s %s \n", sub.at(0).c_str(), sub.at(1).c_str(), sub.at(2).c_str());
+					start = new point3D(stoi(sub.at(0)),stoi(sub.at(1)), stoi(sub.at(2)));
+					cout<<"Start " <<sub.at(0) << " " + sub.at(1) << " "+ sub.at(2) << endl;
+					first = false;
+					//isStart = false;
+				}else{
+					//printf("End 2: %s %s %s \n", sub.at(0).c_str(), sub.at(1).c_str(), sub.at(2).c_str());	
+					end = new point3D(stoi(sub.at(0)),stoi(sub.at(1)), stoi(sub.at(2)));
+					//cout<<"End " <<sub.at(0) << " " + sub.at(1) << " "+ sub.at(2) << endl;
+					getSlopeVector(start,end,15);
+					start = new point3D(stoi(sub.at(0)),stoi(sub.at(1)), stoi(sub.at(2)));
+					//cout<<"Start" <<sub.at(0) << " " + sub.at(1) << " "+ sub.at(2) << endl;
+					//isStart = true;
+				}
+					
+					
+			}
+		}
+		myfile.close();
+	}else{
+		cout << "Unable to open file";
+	}
+
+
+/*
+	point3D *p1 = new point3D(25,5,25);
+	//insertPoint3D(p1);
+	point3D *p2 = new point3D(5,5,10);
+	//insertPoint3D(p2);
+
+	getSlopeVector(p1,p2,15);
+	point3D *p3 = new point3D(-5,5,15);
+	getSlopeVector(p2,p3,15);
+	
+	point3D *p4 = new point3D(-5,5,25);
+	getSlopeVector(p3,p4,15);
+
+	point3D *p5 = new point3D(25,5,25);
+	getSlopeVector(p4,p5,15);
+
+	point3D *p6 = new point3D(50,5,50);
+	getSlopeVector(p5,p6,15);
+
+	point3D *p7 = new point3D(30,5,25);
+	getSlopeVector(p6,p7,15);
+
+	point3D *p8 = new point3D(10,5,0);
+	getSlopeVector(p7,p8,15);
+
+	point3D *p9 = new point3D(30,5,0);
+	getSlopeVector(p8,p9,15);*/
+}
 
 void init(void)
 {
@@ -266,6 +514,11 @@ void init(void)
 	glLightfv(GL_LIGHT1, GL_AMBIENT, amb);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, spec);
 
+	loadCameraPoints();
+	loadLookAtPosition();
+	cameraPosSize = 0;
+
+	printf("Stage Size: %i\n", stages->size() );
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -275,7 +528,19 @@ void init(void)
 		
 }
 
-
+//OpenGl function that handles the frames per second
+void FPS(int val){
+	glutPostRedisplay();
+	//printf("Stage number: %i\n", stageNumber );
+	if(first == false){
+		if(cameraIndex < cameraPos->size()-1 && cameraIndex <=stages->at(stageNumber)){
+			cameraIndex++;
+			glutTimerFunc(100,FPS,100);
+		}
+	}
+	//glutTimerFunc(100,FPS,100); // 1sec = 1000, 59fps = 1000/59 = 17
+	//glutTimerFunc(FPSspeed(speedScalar),FPS,FPSspeed(speedScalar)); // 1sec = 1000, 59fps = 1000/59 = 17
+}
 
 /* display function - GLUT display callback function
  *		clears the screen, sets the camera position, draws the ground plane and movable box
@@ -286,6 +551,7 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	Draw3DScene();
 	DrawHUD();
+	glutTimerFunc(100,FPS,0);
 	glutSwapBuffers(); 
 
 }
@@ -294,7 +560,7 @@ void display(void)
 int main(int argc, char** argv)
 {
 	
-	image_data = LoadPPM("interface.ppm", &width, &height, &max);
+	image_data = LoadPPM("interface.ppm", &width, &height, &max2);
 	glutInit(&argc, argv);		//starts up GLUT
 	
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);

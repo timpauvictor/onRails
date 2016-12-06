@@ -9,7 +9,7 @@ Description - Basic math class
 */
 #ifndef __BASICMATHLIBRARY_H_
 #define __BASICMATHLIBRARY_H_
-class point3;
+class point3D;
 class vec3D;
 
 //3D point class
