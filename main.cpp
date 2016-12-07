@@ -56,13 +56,25 @@ float pos[] = {0,1,0};
 float camPos[] = {5, 5, 10};
 float angle = 0.0f;
 
+/*** AMMO VARIABLES***/
+int ammo = 6;
+string reloading = "Reloading...";
+int startTime;
+int endTime;
+bool isTimed = true;
+bool isReloading = false;
+int timeReloadCounter = 100;
 
 /*** HUD Images***/
+GLubyte *healthBar_image;
 int height = 0;
 int width = 0;
 int max2 = 0;
-GLubyte *image_data;
-GLubyte *images[4];
+GLubyte *ammo_image;
+int height2 = 0;
+int width2 = 0;
+int max3 = 0;
+GLubyte *images[11];
 
 int side = 0;
 int up = 0;
@@ -214,7 +226,13 @@ void DrawText(){
 		glLoadIdentity();
 		//calculate time
 		time1 =60-((elapsedTime)/250);
-		string str = to_string(time1+timeIncr);
+		string str;
+		if((time1+timeIncr) > 0){
+			str = to_string(time1+timeIncr);
+		}else{
+			str = "0";
+		}
+
 		glDisable(GL_LIGHTING);
 		glColor3f(1,1,1);
 
@@ -229,6 +247,15 @@ void DrawText(){
 		glTranslatef(10,775,0);
 		glScalef(0.20,0.20,1);
 		glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
+
+		if(isReloading == true){
+			//Draw Reloading
+			glLoadIdentity();
+			glTranslatef(315,400,0);
+			glScalef(0.25,0.20,1);
+			glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)reloading.c_str());
+		}
+
 		glEnable(GL_LIGHTING);
 
 	glPopMatrix();
@@ -244,7 +271,13 @@ void DrawHUD(){
 	glLoadIdentity();
 	glRasterPos2i(800,800-height);
 	glPixelZoom(-1, 1);
-	glDrawPixels(width,height,GL_RGB, GL_UNSIGNED_BYTE, image_data);
+	glDrawPixels(width,height,GL_RGB, GL_UNSIGNED_BYTE, healthBar_image);
+
+
+	glLoadIdentity();
+	glRasterPos2i(800,800-height-height2);
+	glPixelZoom(-1, 1);
+	glDrawPixels(width2,height2,GL_RGB, GL_UNSIGNED_BYTE, ammo_image);
 	glFlush(); 
 }
 
@@ -378,7 +411,7 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 
 
 void click(){
-
+	if(isReloading == false){
 	//get the ray picking vector
 	vector<vec3D> vector = getRay();
 	vec3D Rd = vector[1];
@@ -393,6 +426,13 @@ void click(){
 
 	//check for target intersections
 	targetIntersections(Rd,R0);
+		//modify ammo count
+		if(ammo > 0){
+			ammo--;
+		}else{
+			ammo = 6;
+		}
+	}
 
 	//calculate if you hit an enemy
 
@@ -669,15 +709,54 @@ void loadCameraPoints(){
 //Display the proper health bar status of the character
 void ManageHealth(){
 	if(health == 3){ //Full Health
-		image_data = images[0];
+		healthBar_image = images[0];
 	}else if (health ==2){ //Medium Health
-		image_data = images[1];
+		healthBar_image= images[1];
 	}else if (health ==1){	//Low Health
-		image_data = images[2];
+		healthBar_image = images[2];
 	}else if (health == 0){	//Empty Health
-		image_data = images[3];
+		healthBar_image = images[3];
 	}else{
 		health = 3;
+	}
+}
+
+//Display proper ammo image on hud
+void ManageAmmo(){
+	if(ammo == 6){
+		ammo_image = images[4];
+	}else if (ammo==5){
+		ammo_image = images[5];
+	}else if(ammo ==4){
+		ammo_image = images[6];
+	}else if(ammo==3){
+		ammo_image = images[7];
+	}else if (ammo==2){
+		ammo_image = images[8];
+	}else if(ammo ==1){
+		ammo_image = images[9];
+		startTime = time1;
+	}else if(ammo==0){
+		ammo_image = images[10];
+		//handle the reloading time
+		isReloading = true;
+		if(isTimed== true){
+			startTime = time1+timeIncr+timeReloadCounter;
+			endTime= startTime - timeReloadCounter;
+			//printf("INITIAL Start time: %i, End time: %i\n",startTime, endTime);
+			isTimed = false;
+		}else{
+			timeReloadCounter--;
+			startTime = time1+timeIncr+timeReloadCounter;
+			//printf("Start time: %i, End time: %i\n",startTime, endTime);
+			if(startTime == endTime){
+				//printf("DONE RELOADING\n");
+				isReloading = false;
+				ammo=6;
+				isTimed = true;
+				timeReloadCounter = 100;
+			}
+		}
 	}
 }
 
@@ -688,7 +767,15 @@ void init(void)
 	images[1] = LoadPPM("HUD/h2.ppm", &width, &height, &max2);
 	images[2] = LoadPPM("HUD/h3.ppm", &width, &height, &max2);
 	images[3] = LoadPPM("HUD/h4.ppm", &width, &height, &max2);
-	image_data = images[0];
+	images[4] = LoadPPM("HUD/ammo6.ppm", &width2, &height2, &max3);
+	images[5] = LoadPPM("HUD/ammo5.ppm", &width2, &height2, &max3);
+	images[6] = LoadPPM("HUD/ammo4.ppm", &width2, &height2, &max3);
+	images[7] = LoadPPM("HUD/ammo3.ppm", &width2, &height2, &max3);
+	images[8] = LoadPPM("HUD/ammo2.ppm", &width2, &height2, &max3);
+	images[9] = LoadPPM("HUD/ammo1.ppm", &width2, &height2, &max3);
+	images[10] = LoadPPM("HUD/ammo0.ppm", &width2, &height2, &max3);
+	healthBar_image = images[0];
+	ammo_image = images[4];
 	glClearColor(0, 0, 0, 0);
 	glColor3f(1, 1, 1);
 
@@ -751,7 +838,7 @@ void display(void)
 	DrawText();
 	Draw3DScene();
 	ManageHealth();
-
+	ManageAmmo();
 	glutTimerFunc(100,FPS,0);
 	glutSwapBuffers(); 
 
