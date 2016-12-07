@@ -9,7 +9,7 @@ Description - Basic math class
 */
 #ifndef __BASICMATHLIBRARY_H_
 #define __BASICMATHLIBRARY_H_
-class point3D;
+class point3;
 class vec3D;
 
 //3D point class
@@ -33,8 +33,10 @@ public:
 	vec3D getNormal(vec3D v2);
 	vec3D normalize();
 	vec3D add(vec3D v2);
+	vec3D subtract(vec3D v2);
 	vec3D vectorMultiply(float scalar);
 	vec3D createVector(point3D p1, point3D p2);
+	float dot(vec3D v2);
 
 private:
 };

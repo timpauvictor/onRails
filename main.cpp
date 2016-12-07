@@ -14,15 +14,22 @@
 #  include <GL/freeglut.h>
 #endif
 //our includes
-#include "basicMathLibrary.cpp" 		//for 3D points and Vectors
+#include "basicMathLibrary.h" 		//for 3D points and Vectors
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
 #include <time.h>
+#include "Target.h"						//Target Objects
+#include <math.h> 	
 
 using namespace std; 
+
+#define PI 3.14159265		//used for hit detection calculations
+
+//vars to save mouse x/y coord
+int mouseX = 0, mouseY = 0;
 
 float light_pos[] = {5,10,5,1};
 /*** CAMERA VARIABLES***/
@@ -46,7 +53,6 @@ int timeIncr =0;
 
 
 float pos[] = {0,1,0};
-
 float camPos[] = {5, 5, 10};
 float angle = 0.0f;
 
@@ -62,6 +68,20 @@ int side = 0;
 int up = 0;
 float ang = 0.0f;
 
+/*** ENEMIES AND TARGET LISTS ***/
+vector<Target> targetList;
+
+
+
+//Initialize Target, and target positions
+void createTargetList(){
+	for (int i = 0; i < 30; i += 10){
+		Target t(i,5,0,1,0.2);
+		targetList.push_back(t);
+	}
+}
+
+
 //insert a point into the cameraPos vector
 void insertPoint3D(point3D *p){
 	cameraPos->push_back(p);
@@ -72,6 +92,120 @@ void insertPoint3D(point3D *p){
 */
 void insertPoint3DLookAt(point3D *p){
 	lookAtPos->push_back(p);
+}
+
+
+vector<vec3D> getRay(){
+	//construct Ray
+	GLdouble R0[3], R1[3], Rd[3];
+	GLdouble modelMat[16], projMat[16];
+	GLint viewMat[4];
+
+	//populate mpv matricies
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelMat);
+	glGetDoublev(GL_PROJECTION_MATRIX, projMat);
+	glGetIntegerv(GL_VIEWPORT, viewMat);
+
+	//calculate near point
+	gluUnProject(mouseX, mouseY, 0.0, modelMat, projMat, viewMat, &R0[0], &R0[1], &R0[2]);
+	//calculate far point
+	gluUnProject(mouseX, mouseY, 1.0, modelMat, projMat, viewMat, &R1[0], &R1[1], &R1[2]);
+
+	//calcualte our ray from R0 and R1
+	Rd[0] = R1[0] - R0[0];
+	Rd[1] = R1[1] - R0[1];
+	Rd[2] = R1[2] - R0[2];
+
+	//turn ray Rd into unit ray 
+	GLdouble m = sqrt(Rd[0]*Rd[0] + Rd[1]*Rd[1] + Rd[2]*Rd[2]);
+	Rd[0] /= m;
+	Rd[1] /= m;
+	Rd[2] /= m;
+
+	//printf("R0: %f, %f, %f | \n", R0[0], R0[1], R0[2]);
+	//printf("R1: %f, %f, %f | \n", R1[0], R1[1], R1[2]);
+	//printf("Rd: %f, %f, %f | \n", Rd[0], Rd[1], Rd[2]);
+
+	vec3D vecRD(Rd[0],Rd[1],Rd[2]);		//the returning vector, vetor Rd
+	vec3D vecR0(R0[0],R0[1],R0[2]);		//the returning vector, vetor Rd
+
+	vector<vec3D> vector(2);
+	vector[0] = vecR0;
+	vector[1] = vecRD;
+
+	return vector;
+}
+
+//Sphere Intersections
+bool targetTest(vec3D Rd, vec3D R0, Target t){
+
+	//At^2 + Bt + C = 0
+	//A = Rd dot Rd
+	//B = 2( (R0 - Pc) dot (Rd) )
+	//C = ( (R0 -Pc) dot (R0 - Pc)) - r^2
+	vec3D Pc(t.x,t.y,t.z);
+
+	float A = Rd.dot(Rd);
+	vec3D temp = (R0.subtract(Pc));
+	float B = 2* (temp.dot(Rd));
+	float C = (temp.dot(temp)) - (t.radius*t.radius);
+
+	//check discriminant(ie d), discriminant = b^2 - 4ac
+	float d = B*B - 4*A*C;
+
+	//if d < 0 then no instersection.
+	//if d = 0 ray is tangent to sphere
+	//if d > 0 ray intersects sphere in two points
+
+	if (d < 0 ){
+		printf("You missed the sphere! \n");
+		return false;
+	}else if (d > 0){
+
+		//if intersections, to find point of intersection
+		//t = quadratic formula 
+		// x = R0.x + t*Rd.x
+		// y = R0.y + t*Rd.y
+		// x = R0.z + t*Rd.z
+
+		float t0 = (-1*B  + sqrt(d))/(2*A);
+		//float t1 = (-1*B  - sqrt(d))/(2*A);
+
+		//Point P
+		float P[3];
+		P[0] = R0.x + t0*Rd.x;
+		P[1] = R0.y + t0*Rd.y;
+		P[2] = R0.z + t0*Rd.z;
+
+		//printf("Target hit! x: %f, y: %f , z: %f \n", t.x,t.y,t.z );
+		printf("Hit at: x: %f , y: %f , z: %f \n", P[0], P[1], P[2]);
+		return true;
+	}
+	return false;
+
+}
+
+
+
+//Checks Intersections with all Target Objects
+void targetIntersections(vec3D Rd, vec3D R0){
+	
+	vector<int> targetHits;			//the int will be like the id of the targets that are hit
+									//the id is the index in the TargetList Vector Array
+	for (int i = 0; i < targetList.size(); i++){
+		bool hit = targetTest(Rd,R0,targetList[i]);
+		if (hit == true){
+			targetHits.push_back(i);
+		}
+	}
+
+	//delete hit objects
+	for (int i = 0 ; i<targetHits.size(); i++){
+		//printf("Target id: %i \n", targetHits[i]);
+		targetList.erase( targetList.begin() + targetHits[i], targetList.begin() + targetHits[i]+1  );
+		printf("Hit & Deleted Target id: %i \n", targetHits[i]);
+	}
+
 }
 
 //Draw all the text onto the screen such as Score and time
@@ -122,6 +256,15 @@ void DrawFloor(){
 	glPopMatrix();
 }
 
+//Draw Targets
+void drawTargets(){
+
+	for (int i = 0; i < targetList.size(); i++){
+		targetList[i].draw(cameraPos->at(cameraIndex)->x,cameraPos->at(cameraIndex)->z);
+	}
+
+}
+
 //Draws the 3D scene
 void Draw3DScene(){
 	glMatrixMode(GL_PROJECTION);
@@ -170,6 +313,8 @@ void Draw3DScene(){
 		glutSolidSphere(1,50,50);
 
 	glPopMatrix();
+
+	drawTargets();
 }
 
 GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
@@ -231,18 +376,67 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 	return img;
 }
 
-void mouse(int btn, int state, int x, int y){
-	y = 800 - y;
 
-	if(btn = GLUT_LEFT_BUTTON && state == GLUT_DOWN){
-		printf("x = %d , y= %d \n", x, y);
-		if( x >= 12 && x <=64 && y >= 137 && y <= 180){
-			side--;
+void click(){
+
+	//get the ray picking vector
+	vector<vec3D> vector = getRay();
+	vec3D Rd = vector[1];
+	vec3D R0 = vector[0];
+/*	
+	printf("--------------- \n ");
+	printf("Rd: %f, %f, %f |  \n", Rd.x, Rd.y, Rd.z);
+	printf("R0: %f, %f, %f | \n", R0.x, R0.y, R0.z);
+*/
+	//check floor intersections
+	//floorIntersection(Rd,R0);
+
+	//check for target intersections
+	targetIntersections(Rd,R0);
+
+	//calculate if you hit an enemy
+
+
+
+	/*
+	-Search through list of objects in the Scene Graph and test Intersections with all of them
+	-keep track of all the objects I hit, but only select the closest one
+	*/
+
+
+}
+
+//handles the mouse events
+void mouse(int btn, int state, int x, int y){
+
+	mouseX = x;
+	mouseY = 800 - y;
+
+	//create a bump if the left mouse button is pressed
+	if(btn == GLUT_LEFT_BUTTON){
+		if(state == GLUT_DOWN){
+			//printf("Left click %i , %i \n", mouseX, mouseY);
+			click();
+		}
+
+	//create a dent if the right button is pressed
+	}else if(btn == GLUT_RIGHT_BUTTON){
+		if(state == GLUT_DOWN){
+			printf("Right click %i , %i \n", mouseX, mouseY);
+			click();
 		}
 	}
 
 	glutPostRedisplay();
+
 }
+
+//Passive keyboard function
+void passive(int x, int y){
+	mouseX = x;
+	mouseY = 800 - y;
+}
+
 
 void keyboard(unsigned char key, int x, int y)
 {
@@ -525,6 +719,8 @@ void init(void)
 	//glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	gluPerspective(45, 1, 1, 100);
 
+	//Initialze Targets
+	createTargetList();
 	//elapsedTime = time (NULL);
 		
 }
@@ -551,10 +747,11 @@ void display(void)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	elapsedTime = glutGet(GLUT_ELAPSED_TIME);
-	Draw3DScene();
 	DrawHUD();
-	ManageHealth();
 	DrawText();
+	Draw3DScene();
+	ManageHealth();
+
 	glutTimerFunc(100,FPS,0);
 	glutSwapBuffers(); 
 
@@ -577,6 +774,7 @@ int main(int argc, char** argv)
 	glutDisplayFunc(display);	//registers "display" as the display callback function
 	glutKeyboardFunc(keyboard);
 	glutMouseFunc(mouse);
+	glutPassiveMotionFunc(passive);
 	glutSpecialFunc(special);
 
 	glEnable(GL_DEPTH_TEST);

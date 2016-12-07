@@ -88,6 +88,18 @@ vec3D vec3D::add(vec3D v2){
 	return v;
 }
 
+//subtracts two vectors together
+vec3D vec3D::subtract(vec3D v2){
+	vec3D v (this->x - v2.x, this->y - v2.y, this->z - v2.z);
+	return v;
+}
+
+//returns the dotproduct between this vector and another vector
+float vec3D::dot(vec3D v2){
+	float dotProduct = (this->x)*v2.x + (this->y)*v2.y + (this->z)*v2.z;
+	return dotProduct;
+}
+
 //moves a 3d point
 point3D movePoint(point3D p, vec3D v){
 	point3D p1 (p.x + v.x, p.y + v.y, p.z + v.z);
