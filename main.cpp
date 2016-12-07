@@ -20,66 +20,101 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <time.h>
 
 using namespace std; 
 
-
-//float verts[8][3] = { {-1,-1,1}, {-1,1,1}, {1,1,1}, {1,-1,1}, {-1,-1,-1}, {-1,1,-1}, {1,1,-1}, {1,-1,-1} };
-//float cols[6][3] = { {1,0,0}, {0,1,1}, {1,1,0}, {0,1,0}, {0,0,1}, {1,0,1} };
 float light_pos[] = {5,10,5,1};
+/*** CAMERA VARIABLES***/
 vector<point3D*> *cameraPos = new vector<point3D*>;
 vector<point3D*> *lookAtPos = new vector<point3D*>;
 vector<int> *stages = new vector<int>;
 int stageNumber = 0;
 int frameCounter = 0;
-//int lookAtCounter = 0;
 int cameraHeight = 1;
 bool first = true;
-
 int lookAtIndex = 0;
 int cameraIndex = 0;
 int cameraPosSize = 0;
+
+/*** SCORE AND TIMER VARIABELS ***/
+int health = 3;
+int score = 0;
+int elapsedTime;
+int time1 = 0;
+int timeIncr =0;
+
 
 float pos[] = {0,1,0};
 
 float camPos[] = {5, 5, 10};
 float angle = 0.0f;
 
+
+/*** HUD Images***/
 int height = 0;
 int width = 0;
 int max2 = 0;
 GLubyte *image_data;
+GLubyte *images[4];
 
 int side = 0;
 int up = 0;
 float ang = 0.0f;
 
+//insert a point into the cameraPos vector
 void insertPoint3D(point3D *p){
-	//printf("insert %f , %f , %f\n", p->x, p->y,p->z);
 	cameraPos->push_back(p);
-	//cameraPosSize++;
-	//printf("Insert, CameraPos Size: %i \n", cameraPosSize );
 }
 
+/*Insert a point into the lookAt vector
+  For each stage, there is a different point where the camera will be looking at	
+*/
 void insertPoint3DLookAt(point3D *p){
-	//printf("insert %f , %f , %f\n", p->x, p->y,p->z);
 	lookAtPos->push_back(p);
-	//lookAtCounter++;
-	//printf("Insert, CameraPos Size: %i \n", cameraPosSize );
 }
 
+//Draw all the text onto the screen such as Score and time
+void DrawText(){
+	glPushMatrix();
+		glLoadIdentity();
+		//calculate time
+		time1 =60-((elapsedTime)/250);
+		string str = to_string(time1+timeIncr);
+		glDisable(GL_LIGHTING);
+		glColor3f(1,1,1);
+
+		//Draw Time
+		glTranslatef(370,730,0);
+		glScalef(0.5,0.5,1);
+		glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
+
+		//Draw Score
+		glLoadIdentity();
+		str = "Score: 0";
+		glTranslatef(10,775,0);
+		glScalef(0.20,0.20,1);
+		glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
+		glEnable(GL_LIGHTING);
+
+	glPopMatrix();
+
+}
+
+//Draw the HUD
 void DrawHUD(){
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluOrtho2D(0, 800, 0, 800);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	glRasterPos2i(width,0);
+	glRasterPos2i(800,800-height);
 	glPixelZoom(-1, 1);
 	glDrawPixels(width,height,GL_RGB, GL_UNSIGNED_BYTE, image_data);
 	glFlush(); 
 }
 
+//Draw Floor
 void DrawFloor(){
 	glPushMatrix();
 		glScalef(100,0.5,100);
@@ -87,6 +122,7 @@ void DrawFloor(){
 	glPopMatrix();
 }
 
+//Draws the 3D scene
 void Draw3DScene(){
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -108,14 +144,6 @@ void Draw3DScene(){
 	gluLookAt(cameraPos->at(cameraIndex)->x, cameraHeight, cameraPos->at(cameraIndex)->z,
 			  lookAtPos->at(lookAtIndex)->x,lookAtPos->at(lookAtIndex)->y,lookAtPos->at(lookAtIndex)->z ,
 			  0,1,0);
-	
-
-	//gluLookAt(cameraPos->at(cameraIndex)->x, cameraPos->at(cameraIndex)->y, cameraPos->at(cameraIndex)->z, 0,0,0, 0,1,0);
-	
-	//gluLookAt(camPos[0], camPos[1] , camPos[2], 0,0,0, 0,1,0);
-
-	//glColor3f(1,1,1);
-
 	DrawFloor();
 
 	/*glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
@@ -289,6 +317,14 @@ void keyboard(unsigned char key, int x, int y)
 				lookAtIndex = 0;
 			}
 			break;
+		case 'b':
+			//image_data = LoadPPM("h2.ppm", &width, &height, &max2);
+			health--;
+			break;
+		case 'n':
+			//image_data = LoadPPM("h2.ppm", &width, &height, &max2);
+			timeIncr +=10;
+			break;
 
 
 	}
@@ -345,15 +381,11 @@ void getSlopeVector(point3D *start, point3D *end, int steps){
 	float run = (x2 -x1)/ (float) steps;
 	float rise = (z2 - z1)/ (float) steps;
 
-	//printf("%f\n", rise/steps);
-	//printf("%f\n", run/steps);
-
-
+	//add the camera position for each frame
 	insertPoint3D(start);
 	frameCounter++;
-	//cameraIndex++;
-	//glutPostRedisplay();
 
+	//interpolate all the points between the start and end points
 	for (int i = 0; i < steps; ++i)
 	{
 
@@ -362,19 +394,11 @@ void getSlopeVector(point3D *start, point3D *end, int steps){
 		x1 +=run;
 		z1 += rise;
 		frameCounter++;
-		//cameraIndex++;
-		//glutPostRedisplay();
 	}
 
 	insertPoint3D(end);
 	frameCounter++;
-	//printf("Frame Count: %i\n", frameCounter);
 	stages->push_back(frameCounter);
-	//cameraIndex++;
-	//glutPostRedisplay();
-	
-	//float incr = 0.1;
-	//if(x1 > x2)
 
 }
 
@@ -414,14 +438,6 @@ void loadLookAtPosition(){
 		cout << "Unable to open file.";
 	}
 
-	/*point3D *origin = new point3D(0,0,0); 
-	insertPoint3DLookAt(origin);
-
-	point3D *p = new point3D(7,1,-15); 
-	insertPoint3DLookAt(p);
-
-	p = new point3D(-25,5,5); 
-	insertPoint3DLookAt(p);*/
 }
 
 //Load the camera positions from textfile
@@ -439,63 +455,46 @@ void loadCameraPoints(){
 			vector<string> sub = split(line, ' ');
 
 			if(sub.size() > 1){
-				//printf("%s %s %s \n", sub.at(0).c_str(), sub.at(1).c_str(), sub.at(2).c_str());
 				if(first == true){
-					//printf("Start 1: %s %s %s \n", sub.at(0).c_str(), sub.at(1).c_str(), sub.at(2).c_str());
 					start = new point3D(stoi(sub.at(0)),stoi(sub.at(1)), stoi(sub.at(2)));
 					cout<<"Start " <<sub.at(0) << " " + sub.at(1) << " "+ sub.at(2) << endl;
 					first = false;
-					//isStart = false;
 				}else{
-					//printf("End 2: %s %s %s \n", sub.at(0).c_str(), sub.at(1).c_str(), sub.at(2).c_str());	
 					end = new point3D(stoi(sub.at(0)),stoi(sub.at(1)), stoi(sub.at(2)));
-					//cout<<"End " <<sub.at(0) << " " + sub.at(1) << " "+ sub.at(2) << endl;
 					getSlopeVector(start,end,15);
 					start = new point3D(stoi(sub.at(0)),stoi(sub.at(1)), stoi(sub.at(2)));
-					//cout<<"Start" <<sub.at(0) << " " + sub.at(1) << " "+ sub.at(2) << endl;
-					//isStart = true;
-				}
-					
-					
+				}		
 			}
 		}
 		myfile.close();
 	}else{
 		cout << "Unable to open file";
 	}
-
-
-/*
-	point3D *p1 = new point3D(25,5,25);
-	//insertPoint3D(p1);
-	point3D *p2 = new point3D(5,5,10);
-	//insertPoint3D(p2);
-
-	getSlopeVector(p1,p2,15);
-	point3D *p3 = new point3D(-5,5,15);
-	getSlopeVector(p2,p3,15);
-	
-	point3D *p4 = new point3D(-5,5,25);
-	getSlopeVector(p3,p4,15);
-
-	point3D *p5 = new point3D(25,5,25);
-	getSlopeVector(p4,p5,15);
-
-	point3D *p6 = new point3D(50,5,50);
-	getSlopeVector(p5,p6,15);
-
-	point3D *p7 = new point3D(30,5,25);
-	getSlopeVector(p6,p7,15);
-
-	point3D *p8 = new point3D(10,5,0);
-	getSlopeVector(p7,p8,15);
-
-	point3D *p9 = new point3D(30,5,0);
-	getSlopeVector(p8,p9,15);*/
 }
 
+//Display the proper health bar status of the character
+void ManageHealth(){
+	if(health == 3){ //Full Health
+		image_data = images[0];
+	}else if (health ==2){ //Medium Health
+		image_data = images[1];
+	}else if (health ==1){	//Low Health
+		image_data = images[2];
+	}else if (health == 0){	//Empty Health
+		image_data = images[3];
+	}else{
+		health = 3;
+	}
+}
+
+//Initialize variables and Hud images
 void init(void)
 {
+	images[0] = LoadPPM("HUD/h1.ppm", &width, &height, &max2);
+	images[1] = LoadPPM("HUD/h2.ppm", &width, &height, &max2);
+	images[2] = LoadPPM("HUD/h3.ppm", &width, &height, &max2);
+	images[3] = LoadPPM("HUD/h4.ppm", &width, &height, &max2);
+	image_data = images[0];
 	glClearColor(0, 0, 0, 0);
 	glColor3f(1, 1, 1);
 
@@ -525,6 +524,8 @@ void init(void)
 	//glOrtho(-2, 2, -2, 2, -2, 2);
 	//glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	gluPerspective(45, 1, 1, 100);
+
+	//elapsedTime = time (NULL);
 		
 }
 
@@ -538,9 +539,9 @@ void FPS(int val){
 			glutTimerFunc(100,FPS,100);
 		}
 	}
-	//glutTimerFunc(100,FPS,100); // 1sec = 1000, 59fps = 1000/59 = 17
-	//glutTimerFunc(FPSspeed(speedScalar),FPS,FPSspeed(speedScalar)); // 1sec = 1000, 59fps = 1000/59 = 17
 }
+
+
 
 /* display function - GLUT display callback function
  *		clears the screen, sets the camera position, draws the ground plane and movable box
@@ -549,18 +550,20 @@ void display(void)
 {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	elapsedTime = glutGet(GLUT_ELAPSED_TIME);
 	Draw3DScene();
 	DrawHUD();
+	ManageHealth();
+	DrawText();
 	glutTimerFunc(100,FPS,0);
 	glutSwapBuffers(); 
+
 
 }
 
 /* main function - program entry point */
 int main(int argc, char** argv)
 {
-	
-	image_data = LoadPPM("interface.ppm", &width, &height, &max2);
 	glutInit(&argc, argv);		//starts up GLUT
 	
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
