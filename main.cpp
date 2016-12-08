@@ -1,6 +1,3 @@
-/* CS 3GC3 - Simple lighting example
- * by R. Teather
- */
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -48,8 +45,16 @@ int cameraPosSize = 0;
 int health = 3;
 int score = 0;
 int elapsedTime;
+int timeAtReset = 0;
+int timeToReset = 0;
+int numOfResets = 1;
+bool firstTime = true;
 int time1 = 0;
 int timeIncr =0;
+int oldTime=0;
+
+/*** Clearing stage variable***/
+bool isLevelCleared = false;
 
 
 float pos[] = {0,1,0};
@@ -74,7 +79,11 @@ GLubyte *ammo_image;
 int height2 = 0;
 int width2 = 0;
 int max3 = 0;
-GLubyte *images[11];
+GLubyte *restart_image;
+int height3 = 0;
+int width3 = 0;
+int max4 = 0;
+GLubyte *images[12];
 
 int side = 0;
 int up = 0;
@@ -207,6 +216,7 @@ void targetIntersections(vec3D Rd, vec3D R0){
 	for (int i = 0; i < targetList.size(); i++){
 		bool hit = targetTest(Rd,R0,targetList[i]);
 		if (hit == true){
+			score+=5;
 			targetHits.push_back(i);
 		}
 	}
@@ -225,37 +235,69 @@ void DrawText(){
 	glPushMatrix();
 		glLoadIdentity();
 		//calculate time
-		time1 =60-((elapsedTime)/250);
-		string str;
-		if((time1+timeIncr) > 0){
-			str = to_string(time1+timeIncr);
-		}else{
-			str = "0";
-		}
-
 		glDisable(GL_LIGHTING);
-		glColor3f(1,1,1);
+		time1 =60-((elapsedTime)/250) + timeToReset;
+		if(isLevelCleared == false){
+			
+			string str;
+			if((time1+timeIncr) > 0){
+				str = to_string(time1+timeIncr);
+			}else{
+				str = "0";
+			}
 
-		//Draw Time
-		glTranslatef(370,730,0);
-		glScalef(0.5,0.5,1);
-		glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
+			
+			glColor3f(1,1,1);
 
-		//Draw Score
-		glLoadIdentity();
-		str = "Score: 0";
-		glTranslatef(10,775,0);
-		glScalef(0.20,0.20,1);
-		glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
+			//Draw Time
+			glTranslatef(370,730,0);
+			glScalef(0.5,0.5,1);
+			glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
 
-		if(isReloading == true){
-			//Draw Reloading
+			//Draw Score
 			glLoadIdentity();
-			glTranslatef(315,400,0);
-			glScalef(0.25,0.20,1);
-			glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)reloading.c_str());
-		}
+			str = "Score: " + to_string(score);
+			glTranslatef(10,775,0);
+			glScalef(0.20,0.20,1);
+			glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
 
+			if(isReloading == true){
+				//Draw Reloading
+				glLoadIdentity();
+				glTranslatef(315,400,0);
+				glScalef(0.25,0.20,1);
+				glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)reloading.c_str());
+			}
+		}else{
+			if(firstTime == true){
+				oldTime = time1+timeIncr;
+				//timeAtReset = glutGet(GLUT_ELAPSED_TIME);
+				firstTime = false;
+			}
+
+
+			string str;
+			str = "Score: " + to_string(score);
+			glColor3f(1,1,1);
+			glTranslatef(320,500,0);
+			glScalef(0.35,0.25,1);
+			glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
+
+			glLoadIdentity();
+			int bonus = (oldTime-10) *2;
+			str = "Time Bonus: " + to_string((oldTime-10)) + " x 2" ;
+			glColor3f(1,1,1);
+			glTranslatef(220,450,0);
+			glScalef(0.35,0.25,1);
+			glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
+
+			glLoadIdentity();
+			str = "Total Score: " + to_string(score+bonus) ;
+			glColor3f(1,1,1);
+			glTranslatef(250,400,0);
+			glScalef(0.35,0.25,1);
+			glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
+		}
 		glEnable(GL_LIGHTING);
 
 	glPopMatrix();
@@ -278,6 +320,15 @@ void DrawHUD(){
 	glRasterPos2i(800,800-height-height2);
 	glPixelZoom(-1, 1);
 	glDrawPixels(width2,height2,GL_RGB, GL_UNSIGNED_BYTE, ammo_image);
+
+
+	if(isLevelCleared == true){
+		glLoadIdentity();
+		glRasterPos2i(500,300);
+		glPixelZoom(-1, 1);
+		glDrawPixels(width3,height3,GL_RGB, GL_UNSIGNED_BYTE, restart_image);
+	}
+
 	glFlush(); 
 }
 
@@ -416,8 +467,9 @@ void Draw3DScene(){
 
 	/*glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity(); */
-
-	drawTargets();
+	if(isLevelCleared==false){
+		drawTargets();
+	}
 }
 
 GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
@@ -516,6 +568,32 @@ void click(){
 
 }
 
+void restartGame(){
+	isLevelCleared = false;
+	stageNumber = 0;
+	frameCounter = 0;
+	cameraHeight = 2.5;
+	first = true;
+	lookAtIndex = 0;
+	cameraIndex = 0;
+	cameraPosSize = 0;
+
+	health = 3;
+	score = 0;
+
+	ammo = 6;
+	isTimed = true;
+	isReloading = false;
+	timeReloadCounter = 100;
+
+	firstTime = true;
+
+	while(time1+timeIncr< 60){
+		timeIncr++;
+	}
+
+}
+
 //handles the mouse events
 void mouse(int btn, int state, int x, int y){
 
@@ -535,6 +613,11 @@ void mouse(int btn, int state, int x, int y){
 			printf("Right click %i , %i \n", mouseX, mouseY);
 			click();
 		}
+	}
+
+	if(x > 302 && x < 500 && y < 500 && y> 450 && isLevelCleared == true){
+		printf("Restart\n");
+		restartGame();
 	}
 
 	glutPostRedisplay();
@@ -848,8 +931,10 @@ void init(void)
 	images[8] = LoadPPM("HUD/ammo2.ppm", &width2, &height2, &max3);
 	images[9] = LoadPPM("HUD/ammo1.ppm", &width2, &height2, &max3);
 	images[10] = LoadPPM("HUD/ammo0.ppm", &width2, &height2, &max3);
+	images[11] = LoadPPM("HUD/restart.ppm", &width3, &height3, &max4);
 	healthBar_image = images[0];
 	ammo_image = images[4];
+	restart_image = images[11];
 	glClearColor(0, 0, 0, 0);
 	glColor3f(1, 1, 1);
 
@@ -895,7 +980,8 @@ void look(){
 	}else if (stageNumber ==2){
 		lookAtIndex = 2;
 	}else if (stageNumber ==3){
-		lookAtIndex = 3;
+		//lookAtIndex = 3;
+		printf("Game DOne\n");	
 	}/*else if (stageNumber == 4){
 		lookAtIndex = 4;
 	}else if (stageNumber ==5){
@@ -943,13 +1029,26 @@ void display(void)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	elapsedTime = glutGet(GLUT_ELAPSED_TIME);
+	if(isLevelCleared == true){
+		/*if(firstTime == true){
+			timeAtReset = glutGet(GLUT_ELAPSED_TIME);
+			//timeAtReset = glutGet(GLUT_ELAPSED_TIME);
+			firstTime = false;
+		}*/
+	}
 	DrawHUD();
 	DrawText();
 	Draw3DScene();
-	ManageHealth();
-	ManageAmmo();
-	look();
-	checkClearedStage();
+	if(stageNumber == stages->size()){
+		isLevelCleared = true;
+	}
+
+	if(isLevelCleared == false){
+		ManageHealth();
+		ManageAmmo();
+		look();
+		checkClearedStage();
+	}
 	glutTimerFunc(100,FPS,0);
 	glutSwapBuffers(); 
 	//printf("%f %f %f\n", cameraPos->at(cameraIndex)->x, cameraHeight, cameraPos->at(cameraIndex)->z);
