@@ -38,7 +38,7 @@ vector<point3D*> *lookAtPos = new vector<point3D*>;
 vector<int> *stages = new vector<int>;
 int stageNumber = 0;
 int frameCounter = 0;
-int cameraHeight = 1;
+float cameraHeight = 2.5;
 bool first = true;
 int lookAtIndex = 0;
 int cameraIndex = 0;
@@ -87,7 +87,7 @@ vector<Target> targetList;
 
 //Initialize Target, and target positions
 void createTargetList(){
-	for (int i = 0; i < 30; i += 10){
+	for (int i = -20; i < 10; i += 10){
 		Target t(i,5,0,1,0.2);
 		targetList.push_back(t);
 	}
@@ -302,7 +302,7 @@ void drawTargets(){
 void Draw3DScene(){
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(45, 1, 1, 100);
+	gluPerspective(45, 1, 0.1, 100);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity(); 
 
@@ -316,11 +316,53 @@ void Draw3DScene(){
 	float m_dif[] = {0.6, 0, 0, 1.0};
 	float m_spec[] = {0.8, 0.6, 0.6, 1.0};
 	float shiny = 32;*/
-
+	//printf("%f %f %f\n", cameraPos->at(cameraIndex)->x, cameraHeight, cameraPos->at(cameraIndex)->z);
+	//printf("%f %f %f\n", lookAtPos->at(lookAtIndex)->x,lookAtPos->at(lookAtIndex)->y,lookAtPos->at(lookAtIndex)->z);
 	gluLookAt(cameraPos->at(cameraIndex)->x, cameraHeight, cameraPos->at(cameraIndex)->z,
 			  lookAtPos->at(lookAtIndex)->x,lookAtPos->at(lookAtIndex)->y,lookAtPos->at(lookAtIndex)->z ,
 			  0,1,0);
 	DrawFloor();
+	/*glutSolidSphere(1,50,50);
+
+	glPushMatrix();
+		glTranslatef(25,1,0);
+		glutSolidTeapot(1);
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(20,1,0);
+		glutSolidTeapot(1);
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(15,1,0);
+		glutSolidTeapot(1);
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(10,1,0);
+		glutSolidTeapot(1);
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(5,1,0);
+		glutSolidTeapot(1);
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(0,1,0);
+		glutSolidTeapot(1);
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(-5,1,0);
+		glutSolidTeapot(1);
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(-10,1,0);
+		glutSolidTeapot(1);
+	glPopMatrix();*/
 
 	/*glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
@@ -329,23 +371,51 @@ void Draw3DScene(){
 	*/
 	glPushMatrix();
 		glTranslatef(side,up,0);
-		glTranslatef(0,2,0);
-		glRotatef(ang, 0,1,0);
-		glutSolidTeapot(1);
+		glTranslatef(23,1,23);
+		glRotatef(60, 0,1,0);
+		glScalef(1.5,1.3,0.5);
+		glutSolidCube(1);
 		glColor3f(0,1,0);
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslatef(-25,1,5);
-	glutSolidCube(1);
+		glTranslatef(15,1,21);
+		glRotatef(10, 0,1,0);
+		glScalef(3,1.3,0.5);
+		glutSolidCube(1);
+		glColor3f(0,1,0);
 	glPopMatrix();
 
 	glPushMatrix();
-		glColor3f(1,0,0);
-		glTranslatef(7,1,-15);
-		glutSolidSphere(1,50,50);
-
+		glTranslatef(17,1,10);
+		glRotatef(70, 0,1,0);
+		glScalef(3,1.3,0.5);
+		glutSolidCube(1);
+		glColor3f(0,1,0);
 	glPopMatrix();
+
+	/*glPushMatrix();
+		glTranslatef(-25,1,5);
+		glutSolidCube(1);
+	glPopMatrix();*/
+
+	glPushMatrix();
+		glColor3f(1,0,0);
+		glTranslatef(17,1, 3);
+		glRotatef(120, 0,1,0);
+		glScalef(3,1.3,3);
+		glutSolidCube(1);
+	glPopMatrix();
+
+	/*glPushMatrix();
+		glColor3f(1,0,0);
+		glTranslatef(7,1,-30);
+		glRotatef(10, 0,1,0);
+		glutSolidCube(1);
+	glPopMatrix();*/
+
+	/*glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity(); */
 
 	drawTargets();
 }
@@ -411,7 +481,7 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 
 
 void click(){
-	if(isReloading == false){
+	if(isReloading == false && cameraHeight == 2.5){
 	//get the ray picking vector
 	vector<vec3D> vector = getRay();
 	vec3D Rd = vector[1];
@@ -532,16 +602,16 @@ void keyboard(unsigned char key, int x, int y)
 			if(first == true){
 				first = false;
 			}else{
-				if(stageNumber < stages->size() -1){
+				if(stageNumber < stages->size() ){
 					stageNumber++;
 				}
 			}
 			break;
 		case ' ':
-			if(cameraHeight == 1){
-				cameraHeight = 8;
+			if(cameraHeight == 1.5){
+				cameraHeight = 2.5;
 			}else{
-				cameraHeight = 1;
+				cameraHeight = 1.5;
 			}
 			break;
 		case 'v':
@@ -617,13 +687,16 @@ void getSlopeVector(point3D *start, point3D *end, int steps){
 
 	//add the camera position for each frame
 	insertPoint3D(start);
+	printf("Start: %f %f %f \n", start->x, start->y, start->z );
 	frameCounter++;
 
 	//interpolate all the points between the start and end points
-	for (int i = 0; i < steps; ++i)
+	for (int i = 1; i < steps; ++i)
 	{
 
 		point3D *p = new point3D(x1+run, y, z1+rise);
+		printf("\t %f %f %f \n", p->x, p->y, p->z );
+		
 		insertPoint3D(p);
 		x1 +=run;
 		z1 += rise;
@@ -631,6 +704,7 @@ void getSlopeVector(point3D *start, point3D *end, int steps){
 	}
 
 	insertPoint3D(end);
+	printf("End: %f %f %f \n", end->x, end->y, end->z );
 	frameCounter++;
 	stages->push_back(frameCounter);
 
@@ -798,7 +872,7 @@ void init(void)
 	loadLookAtPosition();
 	cameraPosSize = 0;
 
-	printf("Stage Size: %i\n", stages->size() );
+	//printf("Stage Size: %i\n", stages->size() );
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -812,6 +886,25 @@ void init(void)
 		
 }
 
+void look(){
+	//printf("LOOK: %i STAGE: %i\n", lookAtIndex, stageNumber);
+	if(stageNumber == 0){
+		lookAtIndex = 0;
+	}else if (stageNumber == 1){
+		lookAtIndex = 1;
+	}else if (stageNumber ==2){
+		lookAtIndex = 2;
+	}else if (stageNumber ==3){
+		lookAtIndex = 3;
+	}/*else if (stageNumber == 4){
+		lookAtIndex = 4;
+	}else if (stageNumber ==5){
+		lookAtIndex = 5;
+	}else if (stageNumber ==6){
+		lookAtIndex = 6;
+	}*/
+}
+
 //OpenGl function that handles the frames per second
 void FPS(int val){
 	glutPostRedisplay();
@@ -821,6 +914,22 @@ void FPS(int val){
 			cameraIndex++;
 			glutTimerFunc(100,FPS,100);
 		}
+	}
+
+}
+
+void checkClearedStage(){
+	if(targetList.size()==0){
+		printf("Hello\n");
+		if(first == true){
+			first = false;
+		}else{
+			if(stageNumber < stages->size() ){
+				stageNumber++;
+			}
+		}
+		createTargetList();
+		timeIncr +=10;
 	}
 }
 
@@ -839,8 +948,12 @@ void display(void)
 	Draw3DScene();
 	ManageHealth();
 	ManageAmmo();
+	look();
+	checkClearedStage();
 	glutTimerFunc(100,FPS,0);
 	glutSwapBuffers(); 
+	//printf("%f %f %f\n", cameraPos->at(cameraIndex)->x, cameraHeight, cameraPos->at(cameraIndex)->z);
+
 
 
 }
