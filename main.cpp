@@ -575,7 +575,7 @@ void click(){
 			ammo = 6;
 		}
 	}
-
+	printf("ammo %i\n", ammo);
 	//calculate if you hit an enemy
 
 
@@ -996,14 +996,14 @@ void ManageAmmo(){
 		if(isTimed== true){
 			startTime = time1+timeIncr+timeReloadCounter;
 			endTime= startTime - timeReloadCounter;
-			//printf("INITIAL Start time: %i, End time: %i\n",startTime, endTime);
+			printf("INITIAL Start time: %i, End time: %i\n",startTime, endTime);
 			isTimed = false;
 		}else{
 			timeReloadCounter--;
 			startTime = time1+timeIncr+timeReloadCounter;
-			//printf("Start time: %i, End time: %i\n",startTime, endTime);
-			if(startTime == endTime){
-				//printf("DONE RELOADING\n");
+			printf("Start time: %i, End time: %i\n",startTime, endTime);
+			if(startTime <= endTime){
+				printf("DONE RELOADING\n");
 				isReloading = false;
 				ammo=6;
 				isTimed = true;
