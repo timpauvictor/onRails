@@ -67,10 +67,65 @@ void Target::draw(float camPos0, float camPos2){
        //	glutWireSphere(radius,50,10);
 
         glColor3f(1,1,1);
+        float m_amb[] = {0, 0.05, 0.05, 1.0};
+        float m_dif[] = {0.4, 0.5, 0.5, 1.0};
+        float m_spec[] = {0.04, 0.7, 0.7, 1.0};
+        float shiny = 0.078125 *128;
+
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
         glutSolidTorus(0.8*radius/4, 0.8*radius/4  +0.6*radius, 10, 50);
+        
         glColor3f(0,0,1);
+        
+        m_amb[0] = 0;
+        m_amb[1] = 0;
+        m_amb[2] = 0;
+        m_dif[0] = 0.55;
+        m_dif[1] = 0.55;
+        m_dif[2]= 0.55;
+        m_spec[0] = 0.7;
+        m_spec[1] = 0.7;
+        m_spec[2]= 0.7; 
+        shiny = 0.078125*128;
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
         glutSolidTorus(1*radius/4,0.7*radius/4 + 0.4*radius,10,50);
+        
+        m_amb[0] = 0.1745;
+        m_amb[1] = 0.01175;
+        m_amb[2] = 0.01175;
+        m_dif[0] = 0.61424;
+        m_dif[1] = 0.04316;
+        m_dif[2]= 0.04136;
+        m_spec[0] = 0.727811;
+        m_spec[1] = 0.626959;
+        m_spec[2]= 0.626959; 
+        shiny = 0.6 * 128;
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
         glutSolidSphere(radius/2.7,50,10);
+        
+        m_amb[0] = 0.1;
+        m_amb[1] = 0.1;
+        m_amb[2] = 0.1;
+        m_dif[0] = 0.5;
+        m_dif[1] = 0.5;
+        m_dif[2]= 0.5;
+        m_spec[0] = 0.99;
+        m_spec[1] = 0.91;
+        m_spec[2]= 0.81; 
+        shiny = 10;
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
         /*
        	glColor3f(1,1,1);
         glutSolidTorus(0.8*scale, 3*scale, 10, 50);

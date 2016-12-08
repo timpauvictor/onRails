@@ -12,6 +12,7 @@
 #endif
 //our includes
 #include "basicMathLibrary.h" 		//for 3D points and Vectors
+#include "basicShapeLibrary.h"
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -68,7 +69,7 @@ int startTime;
 int endTime;
 bool isTimed = true;
 bool isReloading = false;
-int timeReloadCounter = 100;
+int timeReloadCounter = 50;
 
 /*** HUD Images***/
 GLubyte *healthBar_image;
@@ -84,6 +85,22 @@ int height3 = 0;
 int width3 = 0;
 int max4 = 0;
 GLubyte *images[12];
+
+/*** Textures ***/
+GLubyte *crate_tex;
+int height5 = 0;
+int width5 = 0;
+int max6 = 0;
+GLubyte *stone_tex;
+int height4 = 0;
+int width4 = 0;
+int max5 = 0;
+GLuint textures[2];
+Shape s;
+
+//FLOOR
+int mapSize=100;
+vector<vector<float> > myfloor(mapSize,vector<float>(mapSize));
 
 int side = 0;
 int up = 0;
@@ -336,8 +353,18 @@ void DrawHUD(){
 //Draw Floor
 void DrawFloor(){
 	glPushMatrix();
-		glScalef(100,0.5,100);
-		glutSolidCube(1);
+		//glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, textures[1]);
+		for (int i = 0; i < mapSize; ++i)
+		{
+			for (int j = 0; j < mapSize; ++j)
+			{
+				glPushMatrix();
+					glTranslatef(i,0,j);
+					s.glutSolidCube2(1);
+				glPopMatrix();
+			}
+		}
 	glPopMatrix();
 }
 
@@ -358,11 +385,10 @@ void Draw3DScene(){
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity(); 
 
-	float origin[] = {0,0,0,1};
-	float m_amb[] = {0.33, 0.22, 0.03, 1.0};
-	float m_dif[] = {0.78, 0.57, 0.11, 1.0};
+	/*float m_amb[] = {0.1, 0.1, 0.1, 1.0};
+	float m_dif[] = {0.5, 0.5, 0.5, 1.0};
 	float m_spec[] = {0.99, 0.91, 0.81, 1.0};
-	float shiny = 27;
+	float shiny =10;*/
 
 	/*float m_amb[] = {0.3, 0, 0.0, 1.0};
 	float m_dif[] = {0.6, 0, 0, 1.0};
@@ -373,7 +399,9 @@ void Draw3DScene(){
 	gluLookAt(cameraPos->at(cameraIndex)->x, cameraHeight, cameraPos->at(cameraIndex)->z,
 			  lookAtPos->at(lookAtIndex)->x,lookAtPos->at(lookAtIndex)->y,lookAtPos->at(lookAtIndex)->z ,
 			  0,1,0);
+	glEnable(GL_TEXTURE_2D);
 	DrawFloor();
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
 	/*glutSolidSphere(1,50,50);
 
 	glPushMatrix();
@@ -419,14 +447,14 @@ void Draw3DScene(){
 	/*glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
-	*/
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);*/
+	
 	glPushMatrix();
 		glTranslatef(side,up,0);
 		glTranslatef(23,1,23);
 		glRotatef(60, 0,1,0);
 		glScalef(1.5,1.3,0.5);
-		glutSolidCube(1);
+		s.glutSolidCube2(1);
 		glColor3f(0,1,0);
 	glPopMatrix();
 
@@ -434,7 +462,7 @@ void Draw3DScene(){
 		glTranslatef(15,1,21);
 		glRotatef(10, 0,1,0);
 		glScalef(3,1.3,0.5);
-		glutSolidCube(1);
+		s.glutSolidCube2(1);
 		glColor3f(0,1,0);
 	glPopMatrix();
 
@@ -442,32 +470,23 @@ void Draw3DScene(){
 		glTranslatef(17,1,10);
 		glRotatef(70, 0,1,0);
 		glScalef(3,1.3,0.5);
-		glutSolidCube(1);
+		s.glutSolidCube2(1);
 		glColor3f(0,1,0);
 	glPopMatrix();
-
-	/*glPushMatrix();
-		glTranslatef(-25,1,5);
-		glutSolidCube(1);
-	glPopMatrix();*/
 
 	glPushMatrix();
 		glColor3f(1,0,0);
 		glTranslatef(17,1, 3);
 		glRotatef(120, 0,1,0);
 		glScalef(3,1.3,3);
-		glutSolidCube(1);
+		s.glutSolidCube2(1);
 	glPopMatrix();
 
-	/*glPushMatrix();
-		glColor3f(1,0,0);
-		glTranslatef(7,1,-30);
-		glRotatef(10, 0,1,0);
-		glutSolidCube(1);
-	glPopMatrix();*/
 
 	/*glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity(); */
+	glDisable(GL_TEXTURE_2D);
+
 	if(isLevelCleared==false){
 		drawTargets();
 	}
@@ -585,7 +604,7 @@ void restartGame(){
 	ammo = 6;
 	isTimed = true;
 	isReloading = false;
-	timeReloadCounter = 100;
+	timeReloadCounter = 50;
 
 	firstTime = true;
 
@@ -988,7 +1007,8 @@ void ManageAmmo(){
 				isReloading = false;
 				ammo=6;
 				isTimed = true;
-				timeReloadCounter = 100;
+				timeReloadCounter = 50;
+				glutPostRedisplay();
 			}
 		}
 	}
@@ -1012,23 +1032,54 @@ void init(void)
 	healthBar_image = images[0];
 	ammo_image = images[4];
 	restart_image = images[11];
+
+
+
+	crate_tex = LoadPPM("Textures/crates_256.ppm", &width5, &height5, &max6);
+	stone_tex = LoadPPM("Textures/stone_256.ppm", &width4, &height4, &max5);
+	glEnable(GL_TEXTURE_2D);
+
+	glGenTextures(2, textures);
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width5, height5, 0, GL_RGB,GL_UNSIGNED_BYTE, crate_tex);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width4, height4, 0, GL_RGB,GL_UNSIGNED_BYTE, stone_tex);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+
+	//images[12] = LoadPPM("Textures/crates_256.ppm", &width4, &height4, &max5);
+	//images[13] = LoadPPM("Textreus/stone_256.ppm", &width4, &height4, &max5);
+
+
+	glDisable(GL_TEXTURE_2D);
+
+
 	glClearColor(0, 0, 0, 0);
 	glColor3f(1, 1, 1);
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 
-	float position[4] = {1.5,0,0, 0};
+	float position[4] = {20,10,20, 20};
 
-	float amb[4] = {1.0, 1, 1, 1};
-	float diff[4] = {1,0,0, 1};
-	float spec[4] = {0,0,1, 1};
+	float amb[4] = {0.5, 0.5, 0.5, 1};
+	float diff[4] = {1,1,1, 1};
+	float spec[4] = {1,1,1, 1};
 
 
-	glLightfv(GL_LIGHT1, GL_POSITION, position);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, diff);
-	glLightfv(GL_LIGHT1, GL_AMBIENT, amb);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, spec);
+	glLightfv(GL_LIGHT0, GL_POSITION, position);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, amb);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, spec);
 
 	loadCameraPoints();
 	loadLookAtPosition();
@@ -1046,6 +1097,15 @@ void init(void)
 	loadTargets();
 	printTargetInfo();
 	createTargetList();
+
+	for (int x = 0; x < myfloor.size(); ++x)
+	{
+		for (int z = 0; z < myfloor.size(); ++z)
+		{
+			myfloor[x][z] = 0.0f;
+		}
+	}
+
 	//elapsedTime = time (NULL);
 		
 }
