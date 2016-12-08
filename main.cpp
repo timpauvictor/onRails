@@ -20,6 +20,7 @@
 #include <sstream>
 #include <time.h>
 #include "Target.h"						//Target Objects
+#include "Enemy.h"
 #include <math.h> 	
 
 using namespace std; 
@@ -110,6 +111,9 @@ float ang = 0.0f;
 vector<Target> targetList;
 vector<vector<Target>> targetInfo;
 
+vector<Enemy> enemyList;
+vector<vector<Enemy>> enemyInfo;
+
 //Initialize Target, and target positions
 void createTargetList(){
 	//printf("  %f %f %f %f %f \n",targetInfo[i][j].x,targetInfo[i][j].y,targetInfo[i][j].z,targetInfo[i][j].radius,targetInfo[i][j].scale );
@@ -118,6 +122,17 @@ void createTargetList(){
 		printf("  %f %f %f %f %f \n",targetInfo[stageNumber][j].x,targetInfo[stageNumber][j].y,targetInfo[stageNumber][j].z,targetInfo[stageNumber][j].radius,targetInfo[stageNumber][j].scale );
 		Target t(targetInfo[stageNumber][j].x,targetInfo[stageNumber][j].y,targetInfo[stageNumber][j].z,targetInfo[stageNumber][j].radius,targetInfo[stageNumber][j].scale);
 		targetList.push_back(t);
+	}
+}
+
+//Initialize Target, and target positions
+void createEnemyList(){
+	//printf("  %f %f %f %f %f \n",targetInfo[i][j].x,targetInfo[i][j].y,targetInfo[i][j].z,targetInfo[i][j].radius,targetInfo[i][j].scale );
+	//printf("Number of Targets in this stage: %i \n",targetInfo[stageNumber].size());
+	for (int j = 0; j < enemyInfo[stageNumber].size(); j++){
+		//printf("  %f %f %f %f %f \n",targetInfo[stageNumber][j].x,targetInfo[stageNumber][j].y,targetInfo[stageNumber][j].z,targetInfo[stageNumber][j].radius,targetInfo[stageNumber][j].scale );
+		Enemy e(enemyInfo[stageNumber][j].x,enemyInfo[stageNumber][j].y,enemyInfo[stageNumber][j].z,enemyInfo[stageNumber][j].radius,enemyInfo[stageNumber][j].scale,enemyInfo[stageNumber][j].waitTime,enemyInfo[stageNumber][j].moveDir,enemyInfo[stageNumber][j].moveSpeed);
+		enemyList.push_back(e);
 	}
 }
 
@@ -244,6 +259,74 @@ void targetIntersections(vec3D Rd, vec3D R0){
 		//printf("Target id: %i \n", targetHits[i]);
 		targetList.erase( targetList.begin() + targetHits[i], targetList.begin() + targetHits[i]+1  );
 		printf("Hit & Deleted Target id: %i \n", targetHits[i]);
+	}
+
+}
+
+bool enemyHitTest(vec3D Rd, vec3D R0, Enemy e){
+	//At^2 + Bt + C = 0
+	//A = Rd dot Rd
+	//B = 2( (R0 - Pc) dot (Rd) )
+	//C = ( (R0 -Pc) dot (R0 - Pc)) - r^2
+	vec3D Pc(e.x,e.y,e.z);
+
+	float A = Rd.dot(Rd);
+	vec3D temp = (R0.subtract(Pc));
+	float B = 2* (temp.dot(Rd));
+	float C = (temp.dot(temp)) - (e.radius*e.radius);
+
+	//check discriminant(ie d), discriminant = b^2 - 4ac
+	float d = B*B - 4*A*C;
+
+	//if d < 0 then no instersection.
+	//if d = 0 ray is tangent to sphere
+	//if d > 0 ray intersects sphere in two points
+
+	if (d < 0 ){
+		//printf("You missed the sphere! \n");
+		return false;
+	}else if (d > 0){
+
+		//if intersections, to find point of intersection
+		//t = quadratic formula 
+		// x = R0.x + t*Rd.x
+		// y = R0.y + t*Rd.y
+		// x = R0.z + t*Rd.z
+
+		float t0 = (-1*B  + sqrt(d))/(2*A);
+		//float t1 = (-1*B  - sqrt(d))/(2*A);
+
+		//Point P
+		float P[3];
+		P[0] = R0.x + t0*Rd.x;
+		P[1] = R0.y + t0*Rd.y;
+		P[2] = R0.z + t0*Rd.z;
+
+		//printf("Target hit! x: %f, y: %f , z: %f \n", t.x,t.y,t.z );
+		//printf("Hit at: x: %f , y: %f , z: %f \n", P[0], P[1], P[2]);
+		return true;
+	}
+	return false;
+}
+
+
+//Checks Intersections with all Target Objects
+void enemyIntersections(vec3D Rd, vec3D R0){
+	
+	vector<int> enemyHits;			//the int will be like the id of the targets that are hit
+									//the id is the index in the TargetList Vector Array
+	for (int i = 0; i < enemyList.size(); i++){
+		bool hit = enemyHitTest(Rd,R0,enemyList[i]);
+		if (hit == true){
+			enemyHits.push_back(i);
+		}
+	}
+
+	//delete hit objects
+	for (int i = 0 ; i<enemyHits.size(); i++){
+		//printf("Target id: %i \n", targetHits[i]);
+		enemyList.erase( enemyList.begin() + enemyHits[i], enemyList.begin() + enemyHits[i]+1  );
+		printf("Hit & Deleted enemy id: %i \n", enemyHits[i]);
 	}
 
 }
@@ -377,6 +460,20 @@ void drawTargets(){
 
 }
 
+//Draw Enemies
+void drawEnemies(){
+	for (int i = 0; i < enemyList.size(); i++){
+
+		if (cameraHeight == 2.5){
+			enemyList[i].draw(cameraPos->at(cameraIndex)->x,cameraPos->at(cameraIndex)->y+1,cameraPos->at(cameraIndex)->z);
+	
+		}else {
+			enemyList[i].draw(cameraPos->at(cameraIndex)->x,cameraPos->at(cameraIndex)->y+1.5,cameraPos->at(cameraIndex)->z);
+		}
+		
+	}
+}
+
 //Draws the 3D scene
 void Draw3DScene(){
 	glMatrixMode(GL_PROJECTION);
@@ -402,52 +499,6 @@ void Draw3DScene(){
 	glEnable(GL_TEXTURE_2D);
 	DrawFloor();
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
-	/*glutSolidSphere(1,50,50);
-
-	glPushMatrix();
-		glTranslatef(25,1,0);
-		glutSolidTeapot(1);
-	glPopMatrix();
-
-	glPushMatrix();
-		glTranslatef(20,1,0);
-		glutSolidTeapot(1);
-	glPopMatrix();
-
-	glPushMatrix();
-		glTranslatef(15,1,0);
-		glutSolidTeapot(1);
-	glPopMatrix();
-
-	glPushMatrix();
-		glTranslatef(10,1,0);
-		glutSolidTeapot(1);
-	glPopMatrix();
-
-	glPushMatrix();
-		glTranslatef(5,1,0);
-		glutSolidTeapot(1);
-	glPopMatrix();
-
-	glPushMatrix();
-		glTranslatef(0,1,0);
-		glutSolidTeapot(1);
-	glPopMatrix();
-
-	glPushMatrix();
-		glTranslatef(-5,1,0);
-		glutSolidTeapot(1);
-	glPopMatrix();
-
-	glPushMatrix();
-		glTranslatef(-10,1,0);
-		glutSolidTeapot(1);
-	glPopMatrix();*/
-
-	/*glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);*/
 	
 	glPushMatrix();
 		glTranslatef(side,up,0);
@@ -489,6 +540,7 @@ void Draw3DScene(){
 
 	if(isLevelCleared==false){
 		drawTargets();
+		drawEnemies();
 	}
 }
 
@@ -568,6 +620,10 @@ void click(){
 
 	//check for target intersections
 	targetIntersections(Rd,R0);
+
+	//calculate if you hit an enemy
+	enemyIntersections(Rd,R0);
+
 		//modify ammo count
 		if(ammo > 0){
 			ammo--;
@@ -959,6 +1015,70 @@ void loadTargets(){
 	}
 }
 
+/*
+Carlos Will comment this section
+*/
+void loadEnemies(){
+
+	int stageIndex = 0;
+	int saveIndex = 0;
+	bool pushNewStage = false;
+
+	string line;
+	ifstream myfile( "loadEnemies.txt" );
+
+	vector<Enemy> stageEnemies;
+
+	if (myfile.is_open()){
+		//iterate throught the file line by line
+		while(getline(myfile,line)){
+			vector<string> enemies = split(line, ' ');
+			//insert the parameters of each target into the vector of enemies
+			for (int i = 0; i < enemies.size(); i++){
+				//cout << enemies[i] + ":";
+				if (!enemies[i].compare(",")){
+					stageIndex++;
+					//printf("stage: %i ", stageIndex );
+					pushNewStage = true;
+					saveIndex = i;
+					break;
+				}
+			}
+			//printf("/ \n");
+			if (pushNewStage == true){
+				//printf("----------- \n");
+
+				//push current vector of this stages enemies
+				enemyInfo.push_back(stageEnemies);
+
+				//Empty out current stage
+				while (stageEnemies.size() > 0){
+					stageEnemies.pop_back();
+				}
+				
+				pushNewStage = false;
+				
+			}else {
+				//make a Target and add to the stage
+				Enemy e(stof(enemies[0]),
+					stof(enemies[1]),
+					stof(enemies[2]),
+					stof(enemies[3]),
+					stof(enemies[4]),
+					stof(enemies[5]),
+					stof(enemies[6]),
+					stof(enemies[7]));
+				stageEnemies.push_back(e);
+			}
+			
+		}
+		//printf("There are %i stages \n", stageIndex );
+		myfile.close();
+	}else {
+		cout << "Unable to open file.";
+	}
+}
+
 //Display the proper health bar status of the character
 void ManageHealth(){
 	if(health == 3){ //Full Health
@@ -1098,6 +1218,9 @@ void init(void)
 	printTargetInfo();
 	createTargetList();
 
+	loadEnemies();
+	createEnemyList();
+
 	for (int x = 0; x < myfloor.size(); ++x)
 	{
 		for (int z = 0; z < myfloor.size(); ++z)
@@ -1144,7 +1267,7 @@ void FPS(int val){
 }
 
 void checkClearedStage(){
-	if(targetList.size()==0){
+	if(targetList.size()==0 && enemyList.size() == 0){
 		printf("Hello\n");
 		if(first == true){
 			first = false;
@@ -1154,6 +1277,7 @@ void checkClearedStage(){
 			}
 		}
 		createTargetList();
+		createEnemyList();
 		timeIncr +=10;
 	}
 }
