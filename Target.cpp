@@ -37,7 +37,7 @@ Target::Target(float xcord, float ycord, float zcord,float rad, float theScale){
 	rotZ = 0;
 	alive = true;
 	scale = theScale;
-  radius = 4*rad*scale;
+  radius = rad;
   //printf(" radius: %f \n", radius );
 }
 
@@ -64,14 +64,21 @@ void Target::draw(float camPos0, float camPos2){
 		    //glScalef(scale,scale,scale);
 
        	//glColor3f(0,1,0);
-       	//glutWireSphere(radius,50,10);
+       //	glutWireSphere(radius,50,10);
 
+        glColor3f(1,1,1);
+        glutSolidTorus(0.8*radius/4, 0.8*radius/4  +0.6*radius, 10, 50);
+        glColor3f(0,0,1);
+        glutSolidTorus(1*radius/4,0.7*radius/4 + 0.4*radius,10,50);
+        glutSolidSphere(radius/2.7,50,10);
+        /*
        	glColor3f(1,1,1);
         glutSolidTorus(0.8*scale, 3*scale, 10, 50);
         glColor3f(0,0,1);
         glutSolidTorus(1*scale,2*scale,10,50);
         glColor3f(1,0,0);
         glutSolidTorus(0.8*scale,0.8*scale,10,50);
+        */
     glPopMatrix();
 
 }
