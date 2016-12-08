@@ -91,17 +91,18 @@ float ang = 0.0f;
 
 /*** ENEMIES AND TARGET LISTS ***/
 vector<Target> targetList;
-
-
+vector<vector<Target>> targetInfo;
 
 //Initialize Target, and target positions
 void createTargetList(){
-	for (int i = -20; i < 10; i += 10){
-		Target t(i,5,0,1,0.2);
+	//printf("  %f %f %f %f %f \n",targetInfo[i][j].x,targetInfo[i][j].y,targetInfo[i][j].z,targetInfo[i][j].radius,targetInfo[i][j].scale );
+	printf("Number of Targets in this stage: %i \n",targetInfo[stageNumber].size());
+	for (int j = 0; j < targetInfo[stageNumber].size(); j++){
+		printf("  %f %f %f %f %f \n",targetInfo[stageNumber][j].x,targetInfo[stageNumber][j].y,targetInfo[stageNumber][j].z,targetInfo[stageNumber][j].radius,targetInfo[stageNumber][j].scale );
+		Target t(targetInfo[stageNumber][j].x,targetInfo[stageNumber][j].y,targetInfo[stageNumber][j].z,targetInfo[stageNumber][j].radius,targetInfo[stageNumber][j].scale);
 		targetList.push_back(t);
 	}
 }
-
 
 //insert a point into the cameraPos vector
 void insertPoint3D(point3D *p){
@@ -863,6 +864,82 @@ void loadCameraPoints(){
 	}
 }
 
+/*
+Carlos Will comment this section
+*/
+void printTargetInfo(){
+
+	for ( int i = 0; i < targetInfo.size(); i++){
+		printf("Start of new Stage. Targets: \n");
+		for (int j = 0; j< targetInfo[i].size(); j ++){
+			printf("  %f %f %f %f %f \n",targetInfo[i][j].x,targetInfo[i][j].y,targetInfo[i][j].z,targetInfo[i][j].radius,targetInfo[i][j].scale );
+		}
+		printf("End of Stage. \n");
+	}
+}
+
+
+/*
+Carlos Will comment this section
+*/
+void loadTargets(){
+
+	int stageIndex = 0;
+	int saveIndex = 0;
+	bool pushNewStage = false;
+
+	string line;
+	ifstream myfile( "loadTargets.txt" );
+
+	vector<Target> stageTarget;
+
+	if (myfile.is_open()){
+		//iterate throught the file line by line
+		while(getline(myfile,line)){
+			vector<string> targets = split(line, ' ');
+			//insert the parameters of each target into the vector of targets
+			for (int i = 0; i < targets.size(); i++){
+				//cout << targets[i] + ":";
+				if (!targets[i].compare(",")){
+					stageIndex++;
+					//printf("stage: %i ", stageIndex );
+					pushNewStage = true;
+					saveIndex = i;
+					break;
+				}
+			}
+			//printf("/ \n");
+			if (pushNewStage == true){
+				//printf("----------- \n");
+
+				//push current vector of this stages targets
+				targetInfo.push_back(stageTarget);
+
+				//Empty out current stage
+				while (stageTarget.size() > 0){
+					stageTarget.pop_back();
+				}
+				
+				pushNewStage = false;
+				
+			}else {
+				//make a Target and add to the stage
+				Target t(stof(targets[0]),
+					stof(targets[1]),
+					stof(targets[2]),
+					stof(targets.at(3)),
+					stof(targets.at(4)) );
+				stageTarget.push_back(t);
+			}
+			
+		}
+		//printf("There are %i stages \n", stageIndex );
+		myfile.close();
+	}else {
+		cout << "Unable to open file.";
+	}
+}
+
 //Display the proper health bar status of the character
 void ManageHealth(){
 	if(health == 3){ //Full Health
@@ -966,6 +1043,8 @@ void init(void)
 	gluPerspective(45, 1, 1, 100);
 
 	//Initialze Targets
+	loadTargets();
+	printTargetInfo();
 	createTargetList();
 	//elapsedTime = time (NULL);
 		
