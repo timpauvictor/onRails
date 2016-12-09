@@ -453,7 +453,7 @@ void DrawText(){
 				}
 
 				//Display crouching text when crouching
-				if(cameraHeight == 1.5){
+				if(cameraHeight == 0.75){
 					//Draw Crouhcing status
 					glLoadIdentity();
 					glTranslatef(315,25,0);
