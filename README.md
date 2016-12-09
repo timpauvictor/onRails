@@ -1,7 +1,7 @@
-# Target Smash
+# Target Crisis
 
+McMaster University - Software Engineering 3GC3 2016 Final Project: Target Crisis
 
-Computer Sciene 3GC3 Final Project: Target Smash
 Group:
 	Cesar Antonio Santana Penner - 001411598
 	Juan Carlos Santana Penner - 001411625
@@ -9,7 +9,7 @@ Group:
 	Jin Lee - 001417622
 	
 Description:
-On rail shooter game created in c++ and OpenGL. The objective of this game is to clear the stage with the highest possible score by hitting the targets and enemies as fast as you can. Clearing one sub area will grant you access to the next sub area (there are 10 sub areas total). Also be careful on your journey as the enemies will try to shoot you!
+Inspired by the classic on-rails shooter game Time Crisis, Target Crisis was developed in c++ and OpenGL. The objective of the game is to clear the stage with the highest possible score by shooting the targets and enemies as fast as you can. Clearing one sub area will grant you access to the next sub area (there are 10 sub areas total). Also be careful on your journey as the enemies will try to shoot you!
 
 Implemented Features:
 	-Texturing (On obstacles, floor, etc.)
@@ -18,7 +18,7 @@ Implemented Features:
 	-Fog (for map and enemies)
 	-HUD (for player health, ammo count, score, time)
 	-Animation (Enemies)
-	-Object Loading ????
+	-Object Loading
 
 
 Game Controls:
