@@ -60,17 +60,16 @@ void Target::draw(float camPos0, float camPos2){
 
          rotY = angle;
 
-
-		    //glScalef(scale,scale,scale);
-
+        //Hit Sphere
        	//glColor3f(0,1,0);
-       //	glutWireSphere(radius,50,10);
+        //glutWireSphere(radius,50,10);
 
         glColor3f(1,1,1);
-        float m_amb[] = {0, 0.05, 0.05, 1.0};
-        float m_dif[] = {0.4, 0.5, 0.5, 1.0};
-        float m_spec[] = {0.04, 0.7, 0.7, 1.0};
-        float shiny = 0.078125 *128;
+        //BLUE Material
+        float m_amb[] = {0, 0, 0, 1.0};
+        float m_dif[] = {0.0, 0.0, 1, 1.0};
+        float m_spec[] = {0.005, 0.005,0.005, 1.0};
+        float shiny = 12.8;
 
         glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
@@ -80,6 +79,7 @@ void Target::draw(float camPos0, float camPos2){
         
         glColor3f(0,0,1);
         
+        //White Material
         m_amb[0] = 0;
         m_amb[1] = 0;
         m_amb[2] = 0;
@@ -96,6 +96,7 @@ void Target::draw(float camPos0, float camPos2){
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
         glutSolidTorus(1*radius/4,0.7*radius/4 + 0.4*radius,10,50);
         
+        //RED Material
         m_amb[0] = 0.1745;
         m_amb[1] = 0.01175;
         m_amb[2] = 0.01175;
