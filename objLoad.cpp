@@ -84,7 +84,9 @@ Object::Object(std::string s) {
         // printf("\n\nfacePoints size: %i\n\n", facePoints.size());
         Face y = Face(facePoints.at(0), facePoints.at(1), facePoints.at(2));
         facesList.push_back(y);
-      } 
+      } else if (args.at(0) == "vt") {
+        
+      }
     }
     printf("Succesfully loaded object with %i faces", facesList.size());
   } else {
@@ -100,18 +102,18 @@ void Object::render() {
     for (int i = 0; i < facesList.size(); i++) {
         facePoint one = facesList.at(i).f1;
         point3D toDraw = one.v;
-        printf("Drawing at point: %f %f %f",toDraw.x, toDraw.y, toDraw.z);
+        // printf("Drawing at point: %f %f %f",toDraw.x, toDraw.y, toDraw.z);
         glVertex3f(toDraw.x, toDraw.y, toDraw.z);
 
         facePoint two = facesList.at(i).f2;
         toDraw = two.v;
         
-        printf("Drawing at point: %f %f %f",toDraw.x, toDraw.y, toDraw.z);
+        // printf("Drawing at point: %f %f %f",toDraw.x, toDraw.y, toDraw.z);
         glVertex3f(toDraw.x, toDraw.y, toDraw.z);
 
         facePoint three = facesList.at(i).f3;
         toDraw = three.v;
-        printf("Drawing at point: %f %f %f",toDraw.x, toDraw.y, toDraw.z);
+        // printf("Drawing at point: %f %f %f",toDraw.x, toDraw.y, toDraw.z);
         glVertex3f(toDraw.x, toDraw.y, toDraw.z);
     }
   glEnd();

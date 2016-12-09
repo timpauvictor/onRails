@@ -1418,7 +1418,7 @@ void ManageAmmo(){
 //Initialize variables and Hud images
 void init(void)
 {
-	deer = Object("Deer.obj");
+	deer = Object("car.obj");
 
 	
 	images[0] = LoadPPM("HUD/h1.ppm", &width, &height, &max2);
@@ -1638,6 +1638,8 @@ void display(void)
 
 	glPushMatrix();
 		// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glTranslatef(-5, 5, 0);
+		glScalef(0.1, 0.1, 0.1);
 		deer.render();
 	glPopMatrix();
 
