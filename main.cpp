@@ -145,6 +145,8 @@ int side = 0;
 int up = 0;
 float ang = 0.0f;
 
+
+//Used for getting hit and player radius is for bounded box test
 float playerX;
 float playerY;
 float playerZ;
@@ -156,17 +158,6 @@ vector<vector<Target>> targetInfo;
 
 vector<Enemy> enemyList;
 vector<vector<Enemy>> enemyInfo;
-
-//Carlos will comment
-/*
-void drawPlayer(){
-	glPushMatrix();
-		glTranslatef(playerX,playerY,playerZ);
-	  	glColor3f(0,1,0);
-        glutWireSphere(playerRadius,50,10);
-    glPopMatrix();
-}
-*/
 
 //Splits string by a delimiter
 void split(const string &s, char delim, vector<string> &elems){
@@ -185,7 +176,9 @@ vector<string> split(const string &s, char delim){
 	return elems;
 }
 
-//Carlos will comment
+/*
+Check if the player has been hit by an enemies bullet
+*/
 void checkPlayerHit(){
 	//Iterate through all bullets to see if the player got hit
 
@@ -199,11 +192,12 @@ void checkPlayerHit(){
 		playerY = cameraPos->at(cameraIndex)->y;
 		playerZ = cameraPos->at(cameraIndex)->z;
 
-			
+		//Bouned box testing 
 		if (x < playerX + 2 && x > playerX -2){
 			if (z < playerZ + 2 && z > playerZ -2){
 				if (y < playerY + 2 && y > playerY -2){
 					
+					//Only get hit if the player is not crouching
 					if (cameraHeight == 2.5){
 						// /printf("Hit PLAYER x: %f, y: %f , z: %f \n", x,y,z );
 						point3D origin(enemyList[j].x,enemyList[j].y,enemyList[j].z);
@@ -215,15 +209,14 @@ void checkPlayerHit(){
 				}
 			}
 		}	
+
 	}
 }
 
 
-
 //Initialize Target, and target positions
 void createTargetList(){
-	//printf("  %f %f %f %f %f \n",targetInfo[i][j].x,targetInfo[i][j].y,targetInfo[i][j].z,targetInfo[i][j].radius,targetInfo[i][j].scale );
-	printf("Number of Targets in this stage: %i \n",targetInfo[stageNumber].size());
+	//iterate through this the targets scene, and add all of the targets in this stage to the stage(by adding to targetList)
 	for (int j = 0; j < targetInfo[stageNumber].size(); j++){
 		printf("  %f %f %f %f %f \n",targetInfo[stageNumber][j].x,targetInfo[stageNumber][j].y,targetInfo[stageNumber][j].z,targetInfo[stageNumber][j].radius,targetInfo[stageNumber][j].scale );
 		Target t(targetInfo[stageNumber][j].x,targetInfo[stageNumber][j].y,targetInfo[stageNumber][j].z,targetInfo[stageNumber][j].radius,targetInfo[stageNumber][j].scale);
@@ -231,12 +224,11 @@ void createTargetList(){
 	}
 }
 
-//Initialize Target, and target positions
+//Initialize Enemy, and enemy positions
 void createEnemyList(){
-	//printf("  %f %f %f %f %f \n",targetInfo[i][j].x,targetInfo[i][j].y,targetInfo[i][j].z,targetInfo[i][j].radius,targetInfo[i][j].scale );
-	//printf("Number of Targets in this stage: %i \n",targetInfo[stageNumber].size());
+
+	//iterate through this scene, and add all of the enemies in this stage to the stage(by adding to EnemyList)
 	for (int j = 0; j < enemyInfo[stageNumber].size(); j++){
-		//printf("  %f %f %f %f %f \n",targetInfo[stageNumber][j].x,targetInfo[stageNumber][j].y,targetInfo[stageNumber][j].z,targetInfo[stageNumber][j].radius,targetInfo[stageNumber][j].scale );
 		Enemy e(enemyInfo[stageNumber][j].x,enemyInfo[stageNumber][j].y,enemyInfo[stageNumber][j].z,enemyInfo[stageNumber][j].radius,enemyInfo[stageNumber][j].scale,enemyInfo[stageNumber][j].waitTime,enemyInfo[stageNumber][j].moveDir,enemyInfo[stageNumber][j].moveSpeed);
 		enemyList.push_back(e);
 	}
@@ -254,7 +246,10 @@ void insertPoint3DLookAt(point3D *p){
 	lookAtPos->push_back(p);
 }
 
-
+/*
+Get a Direction vector and the point of origin 
+Ray Picking
+*/
 vector<vec3D> getRay(){
 	//construct Ray
 	GLdouble R0[3], R1[3], Rd[3];
@@ -292,10 +287,11 @@ vector<vec3D> getRay(){
 	vector<vec3D> vector(2);
 	vector[0] = vecR0;
 	vector[1] = vecRD;
-
+	//Return R0 and Direction vector
 	return vector;
 }
 
+//Check if you hit a single target
 //Sphere Intersections
 bool targetTest(vec3D Rd, vec3D R0, Target t){
 
@@ -316,36 +312,26 @@ bool targetTest(vec3D Rd, vec3D R0, Target t){
 	//if d < 0 then no instersection.
 	//if d = 0 ray is tangent to sphere
 	//if d > 0 ray intersects sphere in two points
-
 	if (d < 0 ){
 		printf("You missed the sphere! \n");
 		return false;
 	}else if (d > 0){
-
 		//if intersections, to find point of intersection
 		//t = quadratic formula 
 		// x = R0.x + t*Rd.x
 		// y = R0.y + t*Rd.y
 		// x = R0.z + t*Rd.z
-
 		float t0 = (-1*B  + sqrt(d))/(2*A);
-		//float t1 = (-1*B  - sqrt(d))/(2*A);
-
 		//Point P
 		float P[3];
 		P[0] = R0.x + t0*Rd.x;
 		P[1] = R0.y + t0*Rd.y;
 		P[2] = R0.z + t0*Rd.z;
-
-		//printf("Target hit! x: %f, y: %f , z: %f \n", t.x,t.y,t.z );
-		printf("Hit at: x: %f , y: %f , z: %f \n", P[0], P[1], P[2]);
+		//printf("Hit at: x: %f , y: %f , z: %f \n", P[0], P[1], P[2]);
 		return true;
 	}
 	return false;
-
 }
-
-
 
 //Checks Intersections with all Target Objects
 void targetIntersections(vec3D Rd, vec3D R0){
@@ -369,6 +355,8 @@ void targetIntersections(vec3D Rd, vec3D R0){
 
 }
 
+//Check if you hit a single enemy
+//Sphere intersection test
 bool enemyHitTest(vec3D Rd, vec3D R0, Enemy e){
 	//At^2 + Bt + C = 0
 	//A = Rd dot Rd
@@ -383,16 +371,13 @@ bool enemyHitTest(vec3D Rd, vec3D R0, Enemy e){
 
 	//check discriminant(ie d), discriminant = b^2 - 4ac
 	float d = B*B - 4*A*C;
-
 	//if d < 0 then no instersection.
 	//if d = 0 ray is tangent to sphere
 	//if d > 0 ray intersects sphere in two points
-
 	if (d < 0 ){
 		//printf("You missed the sphere! \n");
 		return false;
 	}else if (d > 0){
-
 		//if intersections, to find point of intersection
 		//t = quadratic formula 
 		// x = R0.x + t*Rd.x
@@ -400,15 +385,11 @@ bool enemyHitTest(vec3D Rd, vec3D R0, Enemy e){
 		// x = R0.z + t*Rd.z
 
 		float t0 = (-1*B  + sqrt(d))/(2*A);
-		//float t1 = (-1*B  - sqrt(d))/(2*A);
-
 		//Point P
 		float P[3];
 		P[0] = R0.x + t0*Rd.x;
 		P[1] = R0.y + t0*Rd.y;
 		P[2] = R0.z + t0*Rd.z;
-
-		//printf("Target hit! x: %f, y: %f , z: %f \n", t.x,t.y,t.z );
 		//printf("Hit at: x: %f , y: %f , z: %f \n", P[0], P[1], P[2]);
 		return true;
 	}
@@ -818,7 +799,6 @@ void Draw3DScene(){
 	// 	s.glutSolidCube2(1);
 	// glPopMatrix();
 
-	//drawPlayer();
 	checkPlayerHit();
 
 	/*glMatrixMode(GL_MODELVIEW);
@@ -831,6 +811,8 @@ void Draw3DScene(){
 	}
 }
 
+
+//PPM Loader
 GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 {
 	GLubyte* img;
@@ -890,26 +872,23 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 	return img;
 }
 
-
+//Function that takes care of everything when you click
 void click(){
+	//Cheeck if you are not reloading and that you are not crouching to shoot
 	if(isReloading == false && cameraHeight == 2.5){
-	//get the ray picking vector
-	vector<vec3D> vector = getRay();
-	vec3D Rd = vector[1];
-	vec3D R0 = vector[0];
-/*	
-	printf("--------------- \n ");
-	printf("Rd: %f, %f, %f |  \n", Rd.x, Rd.y, Rd.z);
-	printf("R0: %f, %f, %f | \n", R0.x, R0.y, R0.z);
-*/
-	//check floor intersections
-	//floorIntersection(Rd,R0);
+		//get the ray picking vector
+		vector<vec3D> vector = getRay();
+		vec3D Rd = vector[1];
+		vec3D R0 = vector[0];
 
-	//check for target intersections
-	targetIntersections(Rd,R0);
+		//check floor intersections
+		//floorIntersection(Rd,R0);			//I believe we got rid of this function?/
 
-	//calculate if you hit an enemy
-	enemyIntersections(Rd,R0);
+		//check for target intersections
+		targetIntersections(Rd,R0);
+
+		//calculate if you hit an enemy
+		enemyIntersections(Rd,R0);
 
 		//modify ammo count
 		if(ammo > 0){
@@ -918,31 +897,23 @@ void click(){
 			ammo = 6;
 		}
 	}
-	printf("ammo %i\n", ammo);
-	//calculate if you hit an enemy
-
-
-
+	//printf("ammo %i\n", ammo);
 	/*
 	-Search through list of objects in the Scene Graph and test Intersections with all of them
 	-keep track of all the objects I hit, but only select the closest one
 	*/
-
-
 }
 
 /*
-Carlos Will comment this section
+Read from loadEnemies
 */
 void loadEnemies(){
 
 	int stageIndex = 0;
 	int saveIndex = 0;
 	bool pushNewStage = false;
-
 	string line;
 	ifstream myfile( "loadEnemies.txt" );
-
 	vector<Enemy> stageEnemies;
 
 	if (myfile.is_open()){
@@ -962,8 +933,6 @@ void loadEnemies(){
 			}
 			//printf("/ \n");
 			if (pushNewStage == true){
-				//printf("----------- \n");
-
 				//push current vector of this stages enemies
 				enemyInfo.push_back(stageEnemies);
 
@@ -996,7 +965,7 @@ void loadEnemies(){
 }
 
 /*
-Carlos Will comment this section
+Load Targets from loadTargets.txt
 */
 void loadTargets(){
 
@@ -1027,7 +996,6 @@ void loadTargets(){
 			//printf("/ \n");
 			if (pushNewStage == true){
 				//printf("----------- \n");
-
 				//push current vector of this stages targets
 				targetInfo.push_back(stageTarget);
 
@@ -1035,9 +1003,7 @@ void loadTargets(){
 				while (stageTarget.size() > 0){
 					stageTarget.pop_back();
 				}
-				
 				pushNewStage = false;
-				
 			}else {
 				//make a Target and add to the stage
 				Target t(stof(targets[0]),
@@ -1047,7 +1013,6 @@ void loadTargets(){
 					stof(targets.at(4)) );
 				stageTarget.push_back(t);
 			}
-			
 		}
 		//printf("There are %i stages \n", stageIndex );
 		myfile.close();
@@ -1081,7 +1046,7 @@ void restartGame(){
 		timeIncr++;
 	}
 
-
+	//Empty out any enemies or targets that the player has not defeated
 	while (enemyList.size() > 0){
 		enemyList.pop_back();
 	}
@@ -1116,13 +1081,12 @@ void mouse(int btn, int state, int x, int y){
 		}
 	}
 
+	//For the Restart Button when you win/lose
 	if(x > 302 && x < 500 && y < 500 && y> 450 && (isLevelCleared == true || gameOver==true)){
 		//printf("Restart\n");
 		restartGame();
 	}
-
 	glutPostRedisplay();
-
 }
 
 //Passive keyboard function
@@ -1130,7 +1094,6 @@ void passive(int x, int y){
 	mouseX = x;
 	mouseY = 800 - y;
 }
-
 
 void keyboard(unsigned char key, int x, int y)
 {
@@ -1315,21 +1278,6 @@ void loadCameraPoints(){
 	}
 }
 
-/*
-Carlos Will comment this section
-*/
-void printTargetInfo(){
-
-	for ( int i = 0; i < targetInfo.size(); i++){
-		printf("Start of new Stage. Targets: \n");
-		for (int j = 0; j< targetInfo[i].size(); j ++){
-			printf("  %f %f %f %f %f \n",targetInfo[i][j].x,targetInfo[i][j].y,targetInfo[i][j].z,targetInfo[i][j].radius,targetInfo[i][j].scale );
-		}
-		printf("End of Stage. \n");
-	}
-}
-
-
 //Display the proper health bar status of the character
 void ManageHealth(){
 	if(health == 3){ //Full Health
@@ -1473,10 +1421,7 @@ void init(void)
 
 	//images[12] = LoadPPM("Textures/crates_256.ppm", &width4, &height4, &max5);
 	//images[13] = LoadPPM("Textreus/stone_256.ppm", &width4, &height4, &max5);
-
-
 	glDisable(GL_TEXTURE_2D);
-
 
 	glClearColor(0, 0, 0, 0);
 	glColor3f(1, 1, 1);
@@ -1518,8 +1463,6 @@ void init(void)
 	// glHint(GL_FOG_HINT, GL_NICEST); 
 	// glFogf(GL_FOG_START,1);
 	// glFogf(GL_FOG_END,45);
-
-
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
