@@ -126,12 +126,63 @@ int side = 0;
 int up = 0;
 float ang = 0.0f;
 
+float playerX;
+float playerY;
+float playerZ;
+float playerRadius = 2;
+
 /*** ENEMIES AND TARGET LISTS ***/
 vector<Target> targetList;
 vector<vector<Target>> targetInfo;
 
 vector<Enemy> enemyList;
 vector<vector<Enemy>> enemyInfo;
+
+//Carlos will comment
+/*
+void drawPlayer(){
+	glPushMatrix();
+		glTranslatef(playerX,playerY,playerZ);
+	  	glColor3f(0,1,0);
+        glutWireSphere(playerRadius,50,10);
+    glPopMatrix();
+}
+*/
+
+//Carlos will comment
+void checkPlayerHit(){
+	//Iterate through all bullets to see if the player got hit
+
+	//Array Of all enemies
+	for (int j = 0; j < enemyList.size(); j++){
+		float x = enemyList[j].bullet.x;
+		float y = enemyList[j].bullet.y;
+		float z = enemyList[j].bullet.z;
+
+		playerX = cameraPos->at(cameraIndex)->x;
+		playerY = cameraPos->at(cameraIndex)->y;
+		playerZ = cameraPos->at(cameraIndex)->z;
+
+			
+		if (x < playerX + 2 && x > playerX -2){
+			if (z < playerZ + 2 && z > playerZ -2){
+				if (y < playerY + 2 && y > playerY -2){
+					
+					if (cameraHeight == 2.5){
+						// /printf("Hit PLAYER x: %f, y: %f , z: %f \n", x,y,z );
+						point3D origin(enemyList[j].x,enemyList[j].y,enemyList[j].z);
+	    				point3D p(cameraPos->at(cameraIndex)->x,cameraPos->at(cameraIndex)->y+1,cameraPos->at(cameraIndex)->z);
+						enemyList[j].bullet.resetBullet(origin, p);
+
+						health--;
+					}
+				}
+			}
+		}	
+	}
+}
+
+
 
 //Initialize Target, and target positions
 void createTargetList(){
@@ -686,6 +737,8 @@ void Draw3DScene(){
 		s.glutSolidCube2(1);
 	glPopMatrix();
 
+	//drawPlayer();
+	checkPlayerHit();
 
 	/*glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity(); */
