@@ -864,7 +864,7 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 //Function that takes care of everything when you click
 void click(){
 	//Cheeck if you are not reloading and that you are not crouching to shoot
-	if(isReloading == false && cameraHeight == 2.5){
+	if(isReloading == false && cameraHeight == 1){
 		//get the ray picking vector
 		vector<vec3D> vector = getRay();
 		vec3D Rd = vector[1];
