@@ -1,15 +1,18 @@
-# Target Smash
+# Target Crisis
 
+McMaster University - Software Engineering 3GC3 2016 Final Project: Target Crisis
 
-Computer Sciene 3GC3 Final Project: Target Smash
-Group:
+Created By:
 	Cesar Antonio Santana Penner - 001411598
 	Juan Carlos Santana Penner - 001411625
 	Victor Timpau - 001414243
 	Jin Lee - 001417622
 	
 Description:
-On rail shooter game created in c++ and OpenGL. The objective of this game is to clear the stage with the highest possible score by hitting the targets and enemies as fast as you can. Clearing one sub area will grant you access to the next sub area (there are 10 sub areas total). Also be careful on your journey as the enemies will try to shoot you!
+Inspired by the classic on-rails shooter game Time Crisis, Target Crisis follows a similar theme in putting you, the player, on the rails of a high stakes mission to get to the end. 
+
+Your mission, should you choose to accept, is to clear each stage with the highest possible score by eliminating your enemies and targets as quickly as possible. Clearing one sub area will grant you access to the next sub area (there are 10 sub areas total). Although it sounds simple, your enemies will not hesitate to fire back! Good luck and we’ll see you on the other side.
+This game was developed in c++ and OpenGL. 
 
 Implemented Features:
 	-Texturing (On obstacles, floor, etc.)
@@ -18,7 +21,7 @@ Implemented Features:
 	-Fog (for map and enemies)
 	-HUD (for player health, ammo count, score, time)
 	-Animation (Enemies)
-	-Object Loading ????
+	-Object Loading
 
 
 Game Controls:
@@ -27,7 +30,4 @@ Space Bar -----> Toggle Crouch
 
 
 Run instrutions:
-Download full and type make in terminal to create executable 
-
-
-
+Download full and type ‘make’ in the terminal to create executable.
