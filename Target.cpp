@@ -1,11 +1,13 @@
 /*
-Computer Graphics 3GC3 Assignment 3: 3D Modeller (Group project)
+Computer Graphics 3GC3 Final Project: Target Smash
 
 Cesar Antonio Santana Penner - 001411598
 Juan Carlos Santana Penner - 001411625
-Date: December 1, 2016
+Victor Timpau - 001414243
+Jin Lee - 001417622
+Date: December 9, 2016
 
-Description - Hitbox class
+Description - On rails shooter game created with c++ and openGL. This is the main file
 */
 
 #include <stdio.h>    //printf command
@@ -32,17 +34,19 @@ Target::Target(float xcord, float ycord, float zcord,float rad, float theScale){
 	x = xcord;
 	y = ycord;
 	z = zcord;
+    //rotation
 	rotX = 0;
 	rotY = 0;
 	rotZ = 0;
 	alive = true;
 	scale = theScale;
-  radius = rad;
-  //printf(" radius: %f \n", radius );
+    radius = rad;
 }
 
+//Essentially the Update function
 void Target::draw(float camPos0, float camPos2){
-  //float camPos0, float camPos2
+
+    //Draw Target
     glPushMatrix();
         glTranslated(x,y,z);
 
@@ -54,17 +58,16 @@ void Target::draw(float camPos0, float camPos2){
         float o = camPos2 - z;
 
         float angle = (atan(h/o)*180)/PI;
-          //asin(0/h) * 180 / PI
-
         //printf("angle: %f , tX: %f , tZ: %f camX: %f , camZ: %f \n", angle, x,z, camPos0, camPos2);
-
          rotY = angle;
 
+        //Used for Testing
         //Hit Sphere
        	//glColor3f(0,1,0);
         //glutWireSphere(radius,50,10);
 
-        glColor3f(1,1,1);
+        //glColor3f(0,0,1);
+
         //BLUE Material
         float m_amb[] = {0, 0, 0, 1.0};
         float m_dif[] = {0.0, 0.0, 1, 1.0};
@@ -76,8 +79,6 @@ void Target::draw(float camPos0, float camPos2){
         glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
         glutSolidTorus(0.8*radius/4, 0.8*radius/4  +0.6*radius, 10, 50);
-        
-        glColor3f(0,0,1);
         
         //White Material
         m_amb[0] = 0;
@@ -113,6 +114,7 @@ void Target::draw(float camPos0, float camPos2){
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
         glutSolidSphere(radius/2.7,50,10);
         
+        //Reset Material
         m_amb[0] = 0.1;
         m_amb[1] = 0.1;
         m_amb[2] = 0.1;
@@ -127,14 +129,6 @@ void Target::draw(float camPos0, float camPos2){
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
         glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
-        /*
-       	glColor3f(1,1,1);
-        glutSolidTorus(0.8*scale, 3*scale, 10, 50);
-        glColor3f(0,0,1);
-        glutSolidTorus(1*scale,2*scale,10,50);
-        glColor3f(1,0,0);
-        glutSolidTorus(0.8*scale,0.8*scale,10,50);
-        */
     glPopMatrix();
 
 }

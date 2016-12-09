@@ -1,13 +1,15 @@
 /*
-Computer Graphics 3GC3 Assignment 3: 3D Modeller (Group project)
+Computer Graphics 3GC3 Final Project: Target Smash
 
 Cesar Antonio Santana Penner - 001411598
 Juan Carlos Santana Penner - 001411625
-Date: December 1, 2016
+Victor Timpau - 001414243
+Jin Lee - 001417622
+Date: December 9, 2016
 
-Description - Hitbox class
+Description - On rails shooter game created with c++ and openGL. This is the main file
 */
-
+// Bullet Class
 #include <stdio.h>    //printf command
 #include <stdlib.h>
 
@@ -31,65 +33,64 @@ Description - Hitbox class
 #include "Bullet.h"
 #include "basicMathLibrary.h"
 
-#define PI 3.14159265   //used for hit detection calculations
-
-
+//Class Empty Constructor
 Bullet::Bullet(){
   x = 0;
   y = 0;
   z = 0;
 }
 
+//Class Constructor, All bullets will be made with this
 Bullet::Bullet(point3D startingPoint, point3D targetPoint){  //constructor
   
-  origin = startingPoint;
+  target = targetPoint;
+  origin = startingPoint;   
   x = origin.x;
   y = origin.y;
   z = origin.z;
-  //targetPoint.y +=5;
-  target = targetPoint;
+
   active = true;
   shouldReset = false;
   direction =  direction.createVector(origin,target);
-  realoadTime = 5;
-  t = 0;
+  realoadTime = 5;                       //how long it takes to reaload and shoot
+  t = 0;                                 //time starts at 0
 }
 
+//Once Enemy is ready to shoot again it will reset the buller
 void Bullet::resetBullet(point3D startingPoint, point3D targetPoint){  //constructor
   
+  target = targetPoint;
   origin = startingPoint;
   x = origin.x;
   y = origin.y;
   z = origin.z;
-  //targetPoint.y += 5;
-  target = targetPoint;
+  
   active = true;
   shouldReset = false;
   direction =  direction.createVector(origin,target);
   t = 0;
 
-
+  //Generate a random number
   std::random_device rd; // obtain a random number from hardware
   std::mt19937 eng(rd()); // seed the generator
   std::uniform_int_distribution<> distr(1, 7); // define the range
 
   int randomTime;
-  /* initialize random seed: */
-  //srand (time(NULL));
-  //randomTime = rand() % 7 + 1;  // generate random number betwee 7 and 1
   randomTime = distr(eng);
   //printf("randomTime: %i \n", randomTime);
   realoadTime = randomTime;
 }
 
+//Setting the target of where the bullet is supposed to go
 void Bullet::setTarget(point3D p){
-  target = p;
+  target = p;       
   direction =  direction.createVector(origin,target);
   active = true;
   t = 0;
   shouldReset = false;
 }
 
+//Drawing the bullet
 void Bullet::draw(){
   //float camPos0, float camPos2
     //safety percaution, this solves a bug where t goes negative sometimes
@@ -97,6 +98,7 @@ void Bullet::draw(){
       t = 0;
     }
 
+    //Moving along the vector, where t represents time
     t += 0.05;                    //how fast the bullet will travel per frame
     x = origin.x + t*direction.x;
     y = origin.y + t*direction.y;
@@ -104,17 +106,19 @@ void Bullet::draw(){
 
     //printf("t: %f\n", t);
 
+    // if its time to reload 
     if (t > realoadTime){
       shouldReset = true;
       active = false;
-
     }else { 
 
+      //Brass Meterial, Link can be found in readMe
       float m_amb[] = {0.329412, 0.223529, 0.027451, 1.0};
       float m_dif[] = {0.780392,0.568627, 0.113725, 1.0};
       float m_spec[] = {0.992157, 0.941176, 0.807843, 1.0};
       float shiny = 27.8974;
 
+      //Apply material to buller
       glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
       glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
       glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
@@ -123,9 +127,7 @@ void Bullet::draw(){
       //Draw Bullet
       glPushMatrix();
           glTranslated(x,y,z);
-          //glRotatef(45,0,1,0);
           glScalef(0.8,0.8,0.8);
-          glColor3f(1,0,0);
           glScalef(1,0.2,1);
           glutSolidSphere(0.2,50,10);
       glPopMatrix();
@@ -148,13 +150,6 @@ void Bullet::draw(){
       glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
       glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
       glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
-
-
     }
-
-
-
-
-    //update x, y,z?
 }
 
