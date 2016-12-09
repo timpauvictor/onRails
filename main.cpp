@@ -21,6 +21,7 @@
 #include <time.h>
 #include "Target.h"						//Target Objects
 #include "Enemy.h"
+#include "objLoad.h";
 #include <math.h> 	
 
 using namespace std; 
@@ -29,6 +30,8 @@ using namespace std;
 
 //vars to save mouse x/y coord
 int mouseX = 0, mouseY = 0;
+
+Object deer;
 
 float light_pos[] = {5,10,5,1};
 /*** CAMERA VARIABLES***/
@@ -1415,6 +1418,9 @@ void ManageAmmo(){
 //Initialize variables and Hud images
 void init(void)
 {
+	deer = Object("Deer.obj");
+
+	
 	images[0] = LoadPPM("HUD/h1.ppm", &width, &height, &max2);
 	images[1] = LoadPPM("HUD/h2.ppm", &width, &height, &max2);
 	images[2] = LoadPPM("HUD/h3.ppm", &width, &height, &max2);
@@ -1431,7 +1437,7 @@ void init(void)
 	ammo_image = images[4];
 	restart_image = images[11];
 
-	// loadObj("Deer.obj"); //TODO
+	
 
 	crate_tex = LoadPPM("Textures/crates_256.ppm", &width5, &height5, &max6);
 	stone_tex = LoadPPM("Textures/stone_256.ppm", &width4, &height4, &max5);
@@ -1629,6 +1635,12 @@ void checkClearedStage(){
  */
 void display(void)
 {
+
+	glPushMatrix();
+		// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		deer.render();
+	glPopMatrix();
+
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	elapsedTime = glutGet(GLUT_ELAPSED_TIME);
