@@ -433,9 +433,6 @@ void DrawText(){
 		//calculate time
 		glDisable(GL_LIGHTING);
 		time1 =120-((elapsedTime)/250) + timeToReset;
-		if(time1+timeIncr == 0){
-			gameOver = true;
-		}
 		if(gameOver == false){
 			if(isLevelCleared == false){
 				string str;
@@ -443,6 +440,8 @@ void DrawText(){
 					str = to_string(time1+timeIncr);
 				}else{
 					str = "0";
+					gameOver = true;
+					
 				}
 
 				
@@ -492,7 +491,7 @@ void DrawText(){
 
 				glLoadIdentity();
 				int bonus = (oldTime-10) *2;
-				str = "Time Bonus: " + to_string((oldTime)) + " x 2" ;
+				str = "Time Bonus: " + to_string((oldTime-10)) + " x 2" ;
 				glColor3f(1,1,1);
 				glTranslatef(220,450,0);
 				glScalef(0.35,0.25,1);
@@ -1071,15 +1070,13 @@ void restartGame(){
 	while (enemyList.size() > 0){
 		enemyList.pop_back();
 	}
-	while (enemyList.size() > 0){
-		enemyList.pop_back();
+	while (targetList.size() > 0){
+		targetList.pop_back();
 	}
 	
 	//create new scene?
 	createTargetList();
 	createEnemyList();
-
-
 
 	/*
 	while (enemyList.size() > 0){
