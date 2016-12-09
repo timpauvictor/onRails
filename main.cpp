@@ -1407,7 +1407,7 @@ void init(void)
 	ammo_image = images[4];
 	restart_image = images[11];
 
-
+	// loadObj("Deer.obj"); //TODO
 
 	crate_tex = LoadPPM("Textures/crates_256.ppm", &width5, &height5, &max6);
 	stone_tex = LoadPPM("Textures/stone_256.ppm", &width4, &height4, &max5);
