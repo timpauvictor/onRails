@@ -102,7 +102,7 @@ void Bullet::draw(){
     y = origin.y + t*direction.y;
     z = origin.z + t*direction.z;
 
-    printf("t: %f\n", t);
+    //printf("t: %f\n", t);
 
     if (t > realoadTime){
       shouldReset = true;
