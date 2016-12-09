@@ -110,18 +110,50 @@ void Bullet::draw(){
 
     }else { 
 
-      //Draw Bullet
+      float m_amb[] = {0.329412, 0.223529, 0.027451, 1.0};
+      float m_dif[] = {0.780392,0.568627, 0.113725, 1.0};
+      float m_spec[] = {0.992157, 0.941176, 0.807843, 1.0};
+      float shiny = 27.8974;
 
+      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+      glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
+
+      //Draw Bullet
       glPushMatrix();
           glTranslated(x,y,z);
           //glRotatef(45,0,1,0);
           glScalef(0.8,0.8,0.8);
           glColor3f(1,0,0);
-          glScalef(0.5,0.2,0.5);
-          glutSolidSphere(1,50,10);
+          glScalef(1,0.2,1);
+          glutSolidSphere(0.2,50,10);
       glPopMatrix();
 
+      //reset Material
+      m_amb[0] = 0.1;
+      m_amb[1] = 0.1;
+      m_amb[2] = 0.1;
+      m_amb[3] = 1;
+      m_dif[0] = 0.5;
+      m_dif[1] = 0.5;
+      m_dif[2]= 0.5;
+      m_dif[3] = 1;
+      m_spec[0] = 0.99;
+      m_spec[1] = 0.91;
+      m_spec[2]= 0.81; 
+      m_spec[3] = 1;
+      shiny = 10;
+      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+      glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
+
+
     }
+
+
+
 
     //update x, y,z?
 }
