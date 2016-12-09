@@ -23,7 +23,7 @@ Implemented Features:
 
 Game Controls:
 Left Click ----> Shoot
-Space Bar -----> Crouch
+Space Bar -----> Toggle Crouch
 
 
 Run instrutions:
