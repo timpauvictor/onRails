@@ -1,4 +1,6 @@
-# onRails
+# Target Smash
+
+
 Computer Sciene 3GC3 Final Project: Target Smash
 Group:
 	Cesar Antonio Santana Penner - 001411598
