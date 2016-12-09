@@ -54,6 +54,7 @@ bool firstTime = true;
 int time1 = 0;
 int timeIncr =0;
 int oldTime=0;
+bool gameOver = false;
 
 /*** Clearing stage variable***/
 bool isLevelCleared = false;
@@ -115,6 +116,8 @@ int max10 = 0;
 GLuint textures[6];
 Shape s;
 
+
+
 //FLOOR
 int mapSize=100;
 vector<vector<float> > myfloor(mapSize,vector<float>(mapSize));
@@ -148,6 +151,23 @@ void drawPlayer(){
     glPopMatrix();
 }
 */
+
+//Splits string by a delimiter
+void split(const string &s, char delim, vector<string> &elems){
+	stringstream ss;
+	ss.str(s);
+	string item;
+	while(getline(ss, item, delim)){
+		elems.push_back(item);
+	}
+}
+
+//splits the string and returns as a vector
+vector<string> split(const string &s, char delim){
+	vector<string> elems;
+	split(s,delim, elems);
+	return elems;
+}
 
 //Carlos will comment
 void checkPlayerHit(){
@@ -407,78 +427,88 @@ void DrawText(){
 		glLoadIdentity();
 		//calculate time
 		glDisable(GL_LIGHTING);
-		time1 =60-((elapsedTime)/250) + timeToReset;
-		if(isLevelCleared == false){
-			
-			string str;
-			if((time1+timeIncr) > 0){
-				str = to_string(time1+timeIncr);
+		if(gameOver == false){
+			time1 =60-((elapsedTime)/250) + timeToReset;
+			if(isLevelCleared == false){
+				string str;
+				if((time1+timeIncr) > 0){
+					str = to_string(time1+timeIncr);
+				}else{
+					str = "0";
+				}
+
+				
+				glColor3f(1,1,1);
+
+				//Draw Time
+				glTranslatef(370,730,0);
+				glScalef(0.5,0.5,1);
+				glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
+
+				//Draw Score
+				glLoadIdentity();
+				str = "Score: " + to_string(score);
+				glTranslatef(10,775,0);
+				glScalef(0.20,0.20,1);
+				glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
+
+				if(isReloading == true){
+					//Draw Reloading
+					glLoadIdentity();
+					glTranslatef(315,400,0);
+					glScalef(0.25,0.20,1);
+					glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)reloading.c_str());
+				}
+
+				if(cameraHeight == 1.5){
+					//Draw Crouhcing status
+					glLoadIdentity();
+					glTranslatef(315,25,0);
+					glScalef(0.25,0.20,1);
+					glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)crouching.c_str());
+				}
 			}else{
-				str = "0";
-			}
+				if(firstTime == true){
+					oldTime = time1+timeIncr;
+					//timeAtReset = glutGet(GLUT_ELAPSED_TIME);
+					firstTime = false;
+				}
 
+
+				string str;
+				str = "Score: " + to_string(score);
+				glColor3f(1,1,1);
+				glTranslatef(320,500,0);
+				glScalef(0.35,0.25,1);
+				glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
+
+				glLoadIdentity();
+				int bonus = (oldTime-10) *2;
+				str = "Time Bonus: " + to_string((oldTime-10)) + " x 2" ;
+				glColor3f(1,1,1);
+				glTranslatef(220,450,0);
+				glScalef(0.35,0.25,1);
+				glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
+
+				glLoadIdentity();
+				str = "Total Score: " + to_string(score+bonus) ;
+				glColor3f(1,1,1);
+				glTranslatef(250,400,0);
+				glScalef(0.35,0.25,1);
+				glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
 			
-			glColor3f(1,1,1);
-
-			//Draw Time
-			glTranslatef(370,730,0);
-			glScalef(0.5,0.5,1);
-			glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
-
-			//Draw Score
-			glLoadIdentity();
-			str = "Score: " + to_string(score);
-			glTranslatef(10,775,0);
-			glScalef(0.20,0.20,1);
-			glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
-
-			if(isReloading == true){
-				//Draw Reloading
-				glLoadIdentity();
-				glTranslatef(315,400,0);
-				glScalef(0.25,0.20,1);
-				glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)reloading.c_str());
 			}
+	}else{
+		string str;
+		glLoadIdentity();
+		str = "GAME OVER";
+		glColor3f(1,1,1);
+		glTranslatef(250,400,0);
+		glScalef(0.35,0.25,1);
+		glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
+	}
 
-			if(cameraHeight == 1.5){
-				//Draw Crouhcing status
-				glLoadIdentity();
-				glTranslatef(315,25,0);
-				glScalef(0.25,0.20,1);
-				glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)crouching.c_str());
-			}
-		}else{
-			if(firstTime == true){
-				oldTime = time1+timeIncr;
-				//timeAtReset = glutGet(GLUT_ELAPSED_TIME);
-				firstTime = false;
-			}
-
-
-			string str;
-			str = "Score: " + to_string(score);
-			glColor3f(1,1,1);
-			glTranslatef(320,500,0);
-			glScalef(0.35,0.25,1);
-			glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
-
-			glLoadIdentity();
-			int bonus = (oldTime-10) *2;
-			str = "Time Bonus: " + to_string((oldTime-10)) + " x 2" ;
-			glColor3f(1,1,1);
-			glTranslatef(220,450,0);
-			glScalef(0.35,0.25,1);
-			glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
-
-			glLoadIdentity();
-			str = "Total Score: " + to_string(score+bonus) ;
-			glColor3f(1,1,1);
-			glTranslatef(250,400,0);
-			glScalef(0.35,0.25,1);
-			glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)str.c_str());
-		}
-		glEnable(GL_LIGHTING);
-
+	glEnable(GL_LIGHTING);
 	glPopMatrix();
 
 }
@@ -501,7 +531,7 @@ void DrawHUD(){
 	glDrawPixels(width2,height2,GL_RGB, GL_UNSIGNED_BYTE, ammo_image);
 
 
-	if(isLevelCleared == true){
+	if(isLevelCleared == true || gameOver == true){
 		glLoadIdentity();
 		glRasterPos2i(500,300);
 		glPixelZoom(-1, 1);
@@ -850,6 +880,132 @@ void click(){
 
 }
 
+/*
+Carlos Will comment this section
+*/
+void loadEnemies(){
+
+	int stageIndex = 0;
+	int saveIndex = 0;
+	bool pushNewStage = false;
+
+	string line;
+	ifstream myfile( "loadEnemies.txt" );
+
+	vector<Enemy> stageEnemies;
+
+	if (myfile.is_open()){
+		//iterate throught the file line by line
+		while(getline(myfile,line)){
+			vector<string> enemies = split(line, ' ');
+			//insert the parameters of each target into the vector of enemies
+			for (int i = 0; i < enemies.size(); i++){
+				//cout << enemies[i] + ":";
+				if (!enemies[i].compare(",")){
+					stageIndex++;
+					//printf("stage: %i ", stageIndex );
+					pushNewStage = true;
+					saveIndex = i;
+					break;
+				}
+			}
+			//printf("/ \n");
+			if (pushNewStage == true){
+				//printf("----------- \n");
+
+				//push current vector of this stages enemies
+				enemyInfo.push_back(stageEnemies);
+
+				//Empty out current stage
+				while (stageEnemies.size() > 0){
+					stageEnemies.pop_back();
+				}
+				
+				pushNewStage = false;
+				
+			}else {
+				//make a Target and add to the stage
+				Enemy e(stof(enemies[0]),
+					stof(enemies[1]),
+					stof(enemies[2]),
+					stof(enemies[3]),
+					stof(enemies[4]),
+					stof(enemies[5]),
+					stof(enemies[6]),
+					stof(enemies[7]));
+				stageEnemies.push_back(e);
+			}
+			
+		}
+		//printf("There are %i stages \n", stageIndex );
+		myfile.close();
+	}else {
+		cout << "Unable to open file.";
+	}
+}
+
+/*
+Carlos Will comment this section
+*/
+void loadTargets(){
+
+	int stageIndex = 0;
+	int saveIndex = 0;
+	bool pushNewStage = false;
+
+	string line;
+	ifstream myfile( "loadTargets.txt" );
+
+	vector<Target> stageTarget;
+
+	if (myfile.is_open()){
+		//iterate throught the file line by line
+		while(getline(myfile,line)){
+			vector<string> targets = split(line, ' ');
+			//insert the parameters of each target into the vector of targets
+			for (int i = 0; i < targets.size(); i++){
+				//cout << targets[i] + ":";
+				if (!targets[i].compare(",")){
+					stageIndex++;
+					//printf("stage: %i ", stageIndex );
+					pushNewStage = true;
+					saveIndex = i;
+					break;
+				}
+			}
+			//printf("/ \n");
+			if (pushNewStage == true){
+				//printf("----------- \n");
+
+				//push current vector of this stages targets
+				targetInfo.push_back(stageTarget);
+
+				//Empty out current stage
+				while (stageTarget.size() > 0){
+					stageTarget.pop_back();
+				}
+				
+				pushNewStage = false;
+				
+			}else {
+				//make a Target and add to the stage
+				Target t(stof(targets[0]),
+					stof(targets[1]),
+					stof(targets[2]),
+					stof(targets.at(3)),
+					stof(targets.at(4)) );
+				stageTarget.push_back(t);
+			}
+			
+		}
+		//printf("There are %i stages \n", stageIndex );
+		myfile.close();
+	}else {
+		cout << "Unable to open file.";
+	}
+}
+
+
 void restartGame(){
 	isLevelCleared = false;
 	stageNumber = 0;
@@ -869,10 +1025,34 @@ void restartGame(){
 	timeReloadCounter = 50;
 
 	firstTime = true;
-
+	gameOver = false;
 	while(time1+timeIncr< 60){
 		timeIncr++;
 	}
+
+
+	while (enemyList.size() > 0){
+		enemyList.pop_back();
+	}
+	while (enemyList.size() > 0){
+		enemyList.pop_back();
+	}
+	
+	//create new scene?
+	createTargetList();
+	createEnemyList();
+
+
+
+	/*
+	while (enemyList.size() > 0){
+		enemyList.pop_back();
+	}
+	while (enemyList.size() > 0){
+		enemyList.pop_back();
+	}
+	*/
+	//reinitialize everything
 
 }
 
@@ -897,7 +1077,7 @@ void mouse(int btn, int state, int x, int y){
 		}
 	}
 
-	if(x > 302 && x < 500 && y < 500 && y> 450 && isLevelCleared == true){
+	if(x > 302 && x < 500 && y < 500 && y> 450 && (isLevelCleared == true || gameOver==true)){
 		printf("Restart\n");
 		restartGame();
 	}
@@ -1075,22 +1255,7 @@ void getSlopeVector(point3D *start, point3D *end, int steps){
 
 }
 
-//Splits string by a delimiter
-void split(const string &s, char delim, vector<string> &elems){
-	stringstream ss;
-	ss.str(s);
-	string item;
-	while(getline(ss, item, delim)){
-		elems.push_back(item);
-	}
-}
 
-//splits the string and returns as a vector
-vector<string> split(const string &s, char delim){
-	vector<string> elems;
-	split(s,delim, elems);
-	return elems;
-}
 
 //Load the positions of where the camera should be looking at
 void loadLookAtPosition(){
@@ -1160,131 +1325,6 @@ void printTargetInfo(){
 }
 
 
-/*
-Carlos Will comment this section
-*/
-void loadTargets(){
-
-	int stageIndex = 0;
-	int saveIndex = 0;
-	bool pushNewStage = false;
-
-	string line;
-	ifstream myfile( "loadTargets.txt" );
-
-	vector<Target> stageTarget;
-
-	if (myfile.is_open()){
-		//iterate throught the file line by line
-		while(getline(myfile,line)){
-			vector<string> targets = split(line, ' ');
-			//insert the parameters of each target into the vector of targets
-			for (int i = 0; i < targets.size(); i++){
-				//cout << targets[i] + ":";
-				if (!targets[i].compare(",")){
-					stageIndex++;
-					//printf("stage: %i ", stageIndex );
-					pushNewStage = true;
-					saveIndex = i;
-					break;
-				}
-			}
-			//printf("/ \n");
-			if (pushNewStage == true){
-				//printf("----------- \n");
-
-				//push current vector of this stages targets
-				targetInfo.push_back(stageTarget);
-
-				//Empty out current stage
-				while (stageTarget.size() > 0){
-					stageTarget.pop_back();
-				}
-				
-				pushNewStage = false;
-				
-			}else {
-				//make a Target and add to the stage
-				Target t(stof(targets[0]),
-					stof(targets[1]),
-					stof(targets[2]),
-					stof(targets.at(3)),
-					stof(targets.at(4)) );
-				stageTarget.push_back(t);
-			}
-			
-		}
-		//printf("There are %i stages \n", stageIndex );
-		myfile.close();
-	}else {
-		cout << "Unable to open file.";
-	}
-}
-
-/*
-Carlos Will comment this section
-*/
-void loadEnemies(){
-
-	int stageIndex = 0;
-	int saveIndex = 0;
-	bool pushNewStage = false;
-
-	string line;
-	ifstream myfile( "loadEnemies.txt" );
-
-	vector<Enemy> stageEnemies;
-
-	if (myfile.is_open()){
-		//iterate throught the file line by line
-		while(getline(myfile,line)){
-			vector<string> enemies = split(line, ' ');
-			//insert the parameters of each target into the vector of enemies
-			for (int i = 0; i < enemies.size(); i++){
-				//cout << enemies[i] + ":";
-				if (!enemies[i].compare(",")){
-					stageIndex++;
-					//printf("stage: %i ", stageIndex );
-					pushNewStage = true;
-					saveIndex = i;
-					break;
-				}
-			}
-			//printf("/ \n");
-			if (pushNewStage == true){
-				//printf("----------- \n");
-
-				//push current vector of this stages enemies
-				enemyInfo.push_back(stageEnemies);
-
-				//Empty out current stage
-				while (stageEnemies.size() > 0){
-					stageEnemies.pop_back();
-				}
-				
-				pushNewStage = false;
-				
-			}else {
-				//make a Target and add to the stage
-				Enemy e(stof(enemies[0]),
-					stof(enemies[1]),
-					stof(enemies[2]),
-					stof(enemies[3]),
-					stof(enemies[4]),
-					stof(enemies[5]),
-					stof(enemies[6]),
-					stof(enemies[7]));
-				stageEnemies.push_back(e);
-			}
-			
-		}
-		//printf("There are %i stages \n", stageIndex );
-		myfile.close();
-	}else {
-		cout << "Unable to open file.";
-	}
-}
-
 //Display the proper health bar status of the character
 void ManageHealth(){
 	if(health == 3){ //Full Health
@@ -1295,6 +1335,14 @@ void ManageHealth(){
 		healthBar_image = images[2];
 	}else if (health == 0){	//Empty Health
 		healthBar_image = images[3];
+		printf("GAME OVER\n");
+		gameOver = true;
+		//isLevelCleared = true;
+		for (int i = 0; i < enemyList.size(); i++){
+			enemyList[i].bullet.active = false;
+		}
+
+
 	}else{
 		health = 3;
 	}
@@ -1526,7 +1574,6 @@ void checkClearedStage(){
 		timeIncr +=10;
 	}
 }
-
 
 
 /* display function - GLUT display callback function
