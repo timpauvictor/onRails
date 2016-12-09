@@ -116,7 +116,9 @@ int max10 = 0;
 GLuint textures[6];
 Shape s;
 
-
+/*** FOG ***/
+float density = 0.1; //fog density
+float fogColor[4] = {0.5, 0.5, 0.5, 1};
 
 //FLOOR
 int mapSize=100;
@@ -516,6 +518,7 @@ void DrawText(){
 //Draw the HUD
 void DrawHUD(){
 	glMatrixMode(GL_PROJECTION);
+	glDisable(GL_FOG); 
 	glLoadIdentity();
 	gluOrtho2D(0, 800, 0, 800);
 	glMatrixMode(GL_MODELVIEW);
@@ -523,7 +526,6 @@ void DrawHUD(){
 	glRasterPos2i(800,800-height);
 	glPixelZoom(-1, 1);
 	glDrawPixels(width,height,GL_RGB, GL_UNSIGNED_BYTE, healthBar_image);
-
 
 	glLoadIdentity();
 	glRasterPos2i(800,800-height-height2);
@@ -537,8 +539,8 @@ void DrawHUD(){
 		glPixelZoom(-1, 1);
 		glDrawPixels(width3,height3,GL_RGB, GL_UNSIGNED_BYTE, restart_image);
 	}
-
 	glFlush(); 
+	glEnable(GL_FOG); 
 }
 
 //Draw Floor
@@ -559,17 +561,38 @@ void DrawFloor(){
 	glPopMatrix();
 }
 
+void terrainFog(){
+	glEnable(GL_FOG); 
+	glFogi(GL_FOG_MODE, GL_EXP);
+	glFogfv(GL_FOG_COLOR, fogColor);  
+	glFogf(GL_FOG_DENSITY, density); 
+	glHint(GL_FOG_HINT, GL_NICEST); 
+}
+
+void enemyFog(){
+	glEnable(GL_FOG); 
+	glFogi(GL_FOG_MODE, GL_LINEAR);
+	glFogfv(GL_FOG_COLOR, fogColor);  
+	glFogf(GL_FOG_DENSITY, density); 
+	glHint(GL_FOG_HINT, GL_NICEST); 
+	glFogf(GL_FOG_START,5);
+	glFogf(GL_FOG_END,60);
+}
+
 //Draw Targets
 void drawTargets(){
-
+	enemyFog();
 	for (int i = 0; i < targetList.size(); i++){
 		targetList[i].draw(cameraPos->at(cameraIndex)->x,cameraPos->at(cameraIndex)->z);
 	}
+	terrainFog();
+
 
 }
 
 //Draw Enemies
 void drawEnemies(){
+	enemyFog();
 	for (int i = 0; i < enemyList.size(); i++){
 
 		if (cameraHeight == 2.5){
@@ -580,6 +603,7 @@ void drawEnemies(){
 		}
 		
 	}
+	terrainFog();
 }
 
 //Draws the 3D scene
@@ -1491,9 +1515,33 @@ void init(void)
 	glLightfv(GL_LIGHT0, GL_AMBIENT, amb);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, spec);
 
+	glEnable(GL_LIGHT1);
+
+	float position1[4] = {0,10,0, 20};
+	float amb1[4] = {0.5, 0.5, 0.5, 1};
+	float diff1[4] = {1,1,1, 1};
+	float spec1[4] = {1,1,1, 1};
+
+
+	glLightfv(GL_LIGHT1, GL_POSITION, position1);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, diff1);
+	glLightfv(GL_LIGHT1, GL_AMBIENT, amb1);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, spec1);
+
 	loadCameraPoints();
 	loadLookAtPosition();
 	cameraPosSize = 0;
+
+
+
+	glEnable(GL_FOG); 
+	glFogi(GL_FOG_MODE, GL_EXP);
+	glFogfv(GL_FOG_COLOR, fogColor);  
+	glFogf(GL_FOG_DENSITY, density); 
+	glHint(GL_FOG_HINT, GL_NICEST); 
+	glFogf(GL_FOG_START,1);
+	glFogf(GL_FOG_END,45);
+
 
 	//printf("Stage Size: %i\n", stages->size() );
 
