@@ -432,8 +432,11 @@ void DrawText(){
 		glLoadIdentity();
 		//calculate time
 		glDisable(GL_LIGHTING);
+		time1 =120-((elapsedTime)/250) + timeToReset;
+		if(time1+timeIncr == 0){
+			gameOver = true;
+		}
 		if(gameOver == false){
-			time1 =120-((elapsedTime)/250) + timeToReset;
 			if(isLevelCleared == false){
 				string str;
 				if((time1+timeIncr) > 0){
