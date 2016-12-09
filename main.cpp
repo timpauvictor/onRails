@@ -96,12 +96,31 @@ GLubyte *stone_tex;
 int height4 = 0;
 int width4 = 0;
 int max5 = 0;
-GLuint textures[2];
+GLubyte *steel_tex;
+int height6 = 0;
+int width6 = 0;
+int max7 = 0;
+GLubyte *flameCrate_tex;
+int height7 = 0;
+int width7 = 0;
+int max8 = 0;
+GLubyte *steelCrate_tex;
+int height8 = 0;
+int width8 = 0;
+int max9 = 0;
+GLubyte *modernCrate_tex;
+int height9 = 0;
+int width9 = 0;
+int max10 = 0;
+GLuint textures[6];
 Shape s;
 
 //FLOOR
 int mapSize=100;
 vector<vector<float> > myfloor(mapSize,vector<float>(mapSize));
+
+//Crouching
+string crouching = "CROUCHING";
 
 int side = 0;
 int up = 0;
@@ -369,6 +388,14 @@ void DrawText(){
 				glScalef(0.25,0.20,1);
 				glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)reloading.c_str());
 			}
+
+			if(cameraHeight == 1.5){
+				//Draw Crouhcing status
+				glLoadIdentity();
+				glTranslatef(315,25,0);
+				glScalef(0.25,0.20,1);
+				glutStrokeString(GLUT_STROKE_ROMAN, (unsigned char*)crouching.c_str());
+			}
 		}else{
 			if(firstTime == true){
 				oldTime = time1+timeIncr;
@@ -502,17 +529,33 @@ void Draw3DScene(){
 	
 	glPushMatrix();
 		glTranslatef(side,up,0);
-		glTranslatef(23,1,23);
+		glTranslatef(24,1,23);
+		glRotatef(70, 0,1,0);
+		//glScalef(1.5,1.3,0.5);
+		s.glutSolidCube2(1);
+		glTranslatef(-1.3,0,-0.2);
 		glRotatef(60, 0,1,0);
-		glScalef(1.5,1.3,0.5);
 		s.glutSolidCube2(1);
 		glColor3f(0,1,0);
 	glPopMatrix();
 
 	glPushMatrix();
-		glTranslatef(15,1,21);
+		glTranslatef(15.1,1,21);
 		glRotatef(10, 0,1,0);
-		glScalef(3,1.3,0.5);
+		//glScalef(3,1.3,0.5);
+		glBindTexture(GL_TEXTURE_2D, textures[3]);
+		s.glutSolidCube2(1);
+		glRotatef(13, 0,1,0);
+		glTranslatef(1.2,0,0);
+		glBindTexture(GL_TEXTURE_2D, textures[0]);
+		s.glutSolidCube2(1);
+		glRotatef(-15, 0,1,0);
+		glTranslatef(-2.2,0,1);
+		
+		s.glutSolidCube2(1);
+
+		glRotatef(40, 0,1,0);
+		glTranslatef(1.8,1,0);
 		s.glutSolidCube2(1);
 		glColor3f(0,1,0);
 	glPopMatrix();
@@ -520,8 +563,18 @@ void Draw3DScene(){
 	glPushMatrix();
 		glTranslatef(17,1,10);
 		glRotatef(70, 0,1,0);
-		glScalef(3,1.3,0.5);
+		glScalef(2,1.5,0.5);
+		glBindTexture(GL_TEXTURE_2D, textures[4]);
 		s.glutSolidCube2(1);
+		glScalef(0.5,1,2);
+		glRotatef(70, 0,1,0);
+		glTranslatef(1,0,1);
+		glBindTexture(GL_TEXTURE_2D, textures[5]);
+		s.glutSolidCube2(1);
+		glTranslatef(-0.5,0,1);
+		glBindTexture(GL_TEXTURE_2D, textures[0]);
+		s.glutSolidCube2(1);
+		
 		glColor3f(0,1,0);
 	glPopMatrix();
 
@@ -530,6 +583,106 @@ void Draw3DScene(){
 		glTranslatef(17,1, 3);
 		glRotatef(120, 0,1,0);
 		glScalef(3,1.3,3);
+		s.glutSolidCube2(1);
+	glPopMatrix();
+
+	glPushMatrix();
+		glBindTexture(GL_TEXTURE_2D, textures[5]);
+		glColor3f(1,0,0);
+		glTranslatef(12,1, 8);
+		glRotatef(120, 0,1,0);
+		glScalef(1,1,1);
+		s.glutSolidCube2(1);
+		glTranslatef(1.3,0,1);
+		s.glutSolidCube2(1);
+		glTranslatef(-2,0,0);
+		s.glutSolidCube2(1);
+		glBindTexture(GL_TEXTURE_2D, textures[0]);
+	glPopMatrix();
+
+	glPushMatrix();
+		glColor3f(1,0,0);
+		glTranslatef(10.5,1, 15);
+		glRotatef(120, 0,1,0);
+		glScalef(1,1,1);
+		glutSolidTeapot(1);
+		s.glutSolidCube2(1);
+		glTranslatef(1.3,0,1);
+		s.glutSolidCube2(1);
+		glTranslatef(-2,0,0);
+		s.glutSolidCube2(1);
+	glPopMatrix();
+
+
+	glPushMatrix();
+		glColor3f(1,0,0);
+		glTranslatef(30,1, 30);
+		glRotatef(30, 0,1,0);
+		glScalef(1,1,1);
+		glBindTexture(GL_TEXTURE_2D, textures[0]);
+		s.glutSolidCube2(1);
+
+		glRotatef(-20, 0,1,0);
+		glTranslatef(1,0,0);
+		s.glutSolidCube2(1);
+		glTranslatef(1,0,0);
+		glRotatef(15, 0,1,0);
+
+		s.glutSolidCube2(1);
+		glTranslatef(0,0, -2);
+		glBindTexture(GL_TEXTURE_2D, textures[3]);
+		s.glutSolidCube2(1);
+		glRotatef(-40, 0,1,0);
+		glTranslatef(1,0,0 );
+		glBindTexture(GL_TEXTURE_2D, textures[4]);
+		s.glutSolidCube2(1);
+		glTranslatef(1,0, -1);
+		s.glutSolidCube2(1);
+
+		glRotatef(120, 0,1,0);
+		glTranslatef(2,0,0);
+		s.glutSolidCube2(1);
+		glTranslatef(-3,0,1);
+		glRotatef(-45, 0,1,0);
+		s.glutSolidCube2(1);
+		glTranslatef(0,0, -2);
+		glBindTexture(GL_TEXTURE_2D, textures[0]);
+		s.glutSolidCube2(1);
+		glRotatef(-40, 0,1,0);
+		glTranslatef(1,0,0 );
+		s.glutSolidCube2(1);
+
+		glTranslatef(1,0, -1);
+		s.glutSolidCube2(1);
+	glPopMatrix();
+
+
+	glPushMatrix();
+		glBindTexture(GL_TEXTURE_2D, textures[5]);
+		glColor3f(1,0,0);
+		glTranslatef(30,1, 32);
+		glRotatef(30, 0,1,0);
+		glScalef(1,1,1);
+		glBindTexture(GL_TEXTURE_2D, textures[4]);
+		s.glutSolidCube2(1);
+
+		glTranslatef(1,0,1);
+		glScalef(1,1,1);
+		s.glutSolidCube2(1);
+
+		glTranslatef(-2,0, -2);
+		glScalef(1,1,1);
+		glBindTexture(GL_TEXTURE_2D, textures[0]);
+		s.glutSolidCube2(1);
+		glTranslatef(0.25,1, 1);
+		glRotatef(30, 0,1,0);
+		glScalef(1,1,1);
+		glBindTexture(GL_TEXTURE_2D, textures[5]);
+		s.glutSolidCube2(1);
+		glTranslatef(3,-1, 5);
+		glRotatef(30, 0,1,0);
+		glScalef(1,1,1);
+		glBindTexture(GL_TEXTURE_2D, textures[5]);
 		s.glutSolidCube2(1);
 	glPopMatrix();
 
@@ -1157,9 +1310,13 @@ void init(void)
 
 	crate_tex = LoadPPM("Textures/crates_256.ppm", &width5, &height5, &max6);
 	stone_tex = LoadPPM("Textures/stone_256.ppm", &width4, &height4, &max5);
+	steel_tex = LoadPPM("Textures/steel_256.ppm", &width6, &height6, &max7);
+	flameCrate_tex= LoadPPM("Textures/flamableCrate_256.ppm", &width7, &height7, &max8);
+    steelCrate_tex = LoadPPM("Textures/steelCrate_256.ppm", &width8, &height8, &max9);
+	modernCrate_tex = LoadPPM("Textures/modernCrate_256.ppm", &width9, &height9, &max10);
 	glEnable(GL_TEXTURE_2D);
 
-	glGenTextures(2, textures);
+	glGenTextures(6, textures);
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width5, height5, 0, GL_RGB,GL_UNSIGNED_BYTE, crate_tex);
@@ -1171,6 +1328,38 @@ void init(void)
 	glBindTexture(GL_TEXTURE_2D, textures[1]);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width4, height4, 0, GL_RGB,GL_UNSIGNED_BYTE, stone_tex);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+
+	glBindTexture(GL_TEXTURE_2D, textures[2]);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width6, height6, 0, GL_RGB,GL_UNSIGNED_BYTE, steel_tex);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+
+	glBindTexture(GL_TEXTURE_2D, textures[3]);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width7, height7, 0, GL_RGB,GL_UNSIGNED_BYTE, flameCrate_tex);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+
+	glBindTexture(GL_TEXTURE_2D, textures[4]);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width8, height8, 0, GL_RGB,GL_UNSIGNED_BYTE, steelCrate_tex);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+
+	glBindTexture(GL_TEXTURE_2D, textures[5]);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width9, height9, 0, GL_RGB,GL_UNSIGNED_BYTE, modernCrate_tex);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -1242,15 +1431,18 @@ void look(){
 	}else if (stageNumber ==2){
 		lookAtIndex = 2;
 	}else if (stageNumber ==3){
-		//lookAtIndex = 3;
-		printf("Game DOne\n");	
-	}/*else if (stageNumber == 4){
-		lookAtIndex = 4;
+		lookAtIndex = 3;
+	}else if (stageNumber ==4){
+		lookAtIndex = 4;	
 	}else if (stageNumber ==5){
-		lookAtIndex = 5;
+		lookAtIndex = 5;	
 	}else if (stageNumber ==6){
 		lookAtIndex = 6;
-	}*/
+	}else if (stageNumber ==7){
+		lookAtIndex = 7;
+	}else if (stageNumber ==8){
+		lookAtIndex = 8;
+	}
 }
 
 //OpenGl function that handles the frames per second
@@ -1302,7 +1494,7 @@ void display(void)
 	DrawHUD();
 	DrawText();
 	Draw3DScene();
-	if(stageNumber == stages->size()){
+	if(stageNumber == stages->size()-1){
 		isLevelCleared = true;
 	}
 
