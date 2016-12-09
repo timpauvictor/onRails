@@ -1053,7 +1053,7 @@ void restartGame(){
 
 	firstTime = true;
 	gameOver = false;
-	while(time1+timeIncr< 60){
+	while(time1+timeIncr< 120){
 		timeIncr++;
 	}
 
