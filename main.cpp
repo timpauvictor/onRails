@@ -1,14 +1,3 @@
-/*
-Computer Graphics 3GC3 Final Project: Target Smash
-
-Cesar Antonio Santana Penner - 001411598
-Juan Carlos Santana Penner - 001411625
-Victor Timpau - 001414243
-Jin Lee - 001417622
-Date: December 9, 2016
-
-Description - On rails shooter game created with c++ and openGL. This is the main file
-*/
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -52,7 +41,7 @@ vector<point3D*> *lookAtPos = new vector<point3D*>;
 vector<int> *stages = new vector<int>;
 int stageNumber = 0;
 int frameCounter = 0;
-float cameraHeight = 2.5;
+float cameraHeight = 1;
 bool first = true;
 int lookAtIndex = 0;
 int cameraIndex = 0;
@@ -205,7 +194,7 @@ void checkPlayerHit(){
 			if (z < playerZ + 2 && z > playerZ -2){
 				if (y < playerY + 2 && y > playerY -2){
 					
-					if (cameraHeight == 2.5){
+					if (cameraHeight == 1){
 						// /printf("Hit PLAYER x: %f, y: %f , z: %f \n", x,y,z );
 						point3D origin(enemyList[j].x,enemyList[j].y,enemyList[j].z);
 	    				point3D p(cameraPos->at(cameraIndex)->x,cameraPos->at(cameraIndex)->y+1,cameraPos->at(cameraIndex)->z);
@@ -612,7 +601,7 @@ void drawEnemies(){
 	enemyFog();
 	for (int i = 0; i < enemyList.size(); i++){
 
-		if (cameraHeight == 2.5){
+		if (cameraHeight == 1){
 			enemyList[i].draw(cameraPos->at(cameraIndex)->x,cameraPos->at(cameraIndex)->y+1,cameraPos->at(cameraIndex)->z);
 	
 		}else {
@@ -652,7 +641,7 @@ void Draw3DScene(){
 	glPushMatrix();
 		// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		// glTranslatef(-5, 5, 0);
-		// glScalef(0.1, 0.1, 0.1);
+		// glScalef(2, 2, 2);
 		map.render();
 	glPopMatrix();
 	
@@ -889,7 +878,7 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 
 
 void click(){
-	if(isReloading == false && cameraHeight == 2.5){
+	if(isReloading == false && cameraHeight == 1){
 	//get the ray picking vector
 	vector<vec3D> vector = getRay();
 	vec3D Rd = vector[1];
@@ -1058,7 +1047,7 @@ void restartGame(){
 	isLevelCleared = false;
 	stageNumber = 0;
 	frameCounter = 0;
-	cameraHeight = 2.5;
+	cameraHeight = 1;
 	first = true;
 	lookAtIndex = 0;
 	cameraIndex = 0;
@@ -1199,10 +1188,10 @@ void keyboard(unsigned char key, int x, int y)
 			}
 			break;
 		case ' ':
-			if(cameraHeight == 1.5){
-				cameraHeight = 2.5;
+			if(cameraHeight == 1){
+				cameraHeight = 0.75;
 			}else{
-				cameraHeight = 1.5;
+				cameraHeight = 1;
 			}
 			break;
 		case 'v':
