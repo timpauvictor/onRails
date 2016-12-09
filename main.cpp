@@ -1470,7 +1470,6 @@ void init(void)
 
 	//Initialze Targets
 	loadTargets();
-	printTargetInfo();
 	createTargetList();
 
 	loadEnemies();
