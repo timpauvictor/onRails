@@ -31,7 +31,7 @@ using namespace std;
 //vars to save mouse x/y coord
 int mouseX = 0, mouseY = 0;
 
-Object deer;
+Object deer("car.obj");
 
 float light_pos[] = {5,10,5,1};
 /*** CAMERA VARIABLES***/
@@ -637,6 +637,13 @@ void Draw3DScene(){
 	glEnable(GL_TEXTURE_2D);
 	DrawFloor();
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
+
+	glPushMatrix();
+		// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glTranslatef(-5, 5, 0);
+		glScalef(0.1, 0.1, 0.1);
+		deer.render();
+	glPopMatrix();
 	
 	glPushMatrix();
 		glTranslatef(side,up,0);
@@ -1650,11 +1657,9 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	elapsedTime = glutGet(GLUT_ELAPSED_TIME);
 	if(isLevelCleared == true){
-		/*if(firstTime == true){
 			timeAtReset = glutGet(GLUT_ELAPSED_TIME);
 			//timeAtReset = glutGet(GLUT_ELAPSED_TIME);
 			firstTime = false;
-		}*/
 	}
 	DrawHUD();
 	DrawText();
