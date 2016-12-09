@@ -433,7 +433,7 @@ void DrawText(){
 		//calculate time
 		glDisable(GL_LIGHTING);
 		if(gameOver == false){
-			time1 =60-((elapsedTime)/250) + timeToReset;
+			time1 =120-((elapsedTime)/250) + timeToReset;
 			if(isLevelCleared == false){
 				string str;
 				if((time1+timeIncr) > 0){
@@ -489,7 +489,7 @@ void DrawText(){
 
 				glLoadIdentity();
 				int bonus = (oldTime-10) *2;
-				str = "Time Bonus: " + to_string((oldTime-10)) + " x 2" ;
+				str = "Time Bonus: " + to_string((oldTime)) + " x 2" ;
 				glColor3f(1,1,1);
 				glTranslatef(220,450,0);
 				glScalef(0.35,0.25,1);
@@ -1105,7 +1105,7 @@ void mouse(int btn, int state, int x, int y){
 	}
 
 	if(x > 302 && x < 500 && y < 500 && y> 450 && (isLevelCleared == true || gameOver==true)){
-		printf("Restart\n");
+		//printf("Restart\n");
 		restartGame();
 	}
 

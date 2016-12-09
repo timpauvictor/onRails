@@ -100,18 +100,18 @@ void Object::render() {
     for (int i = 0; i < facesList.size(); i++) {
         facePoint one = facesList.at(i).f1;
         point3D toDraw = one.v;
-        printf("Drawing at point: %f %f %f",toDraw.x, toDraw.y, toDraw.z);
+        //printf("Drawing at point: %f %f %f",toDraw.x, toDraw.y, toDraw.z);
         glVertex3f(toDraw.x, toDraw.y, toDraw.z);
 
         facePoint two = facesList.at(i).f2;
         toDraw = two.v;
         
-        printf("Drawing at point: %f %f %f",toDraw.x, toDraw.y, toDraw.z);
+        //printf("Drawing at point: %f %f %f",toDraw.x, toDraw.y, toDraw.z);
         glVertex3f(toDraw.x, toDraw.y, toDraw.z);
 
         facePoint three = facesList.at(i).f3;
         toDraw = three.v;
-        printf("Drawing at point: %f %f %f",toDraw.x, toDraw.y, toDraw.z);
+        //printf("Drawing at point: %f %f %f",toDraw.x, toDraw.y, toDraw.z);
         glVertex3f(toDraw.x, toDraw.y, toDraw.z);
     }
   glEnd();
