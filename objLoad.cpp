@@ -60,6 +60,7 @@ Object::Object(std::string s) {
   if (myfile.is_open()) { 
     while (std::getline(myfile, line)) { 
       counter++; 
+      printf("\n%i", counter);
       args = objSplit(line, ' '); 
       if (args.at(0) == "v") { 
         vertexList.push_back(point3D( 

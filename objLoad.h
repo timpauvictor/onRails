@@ -28,8 +28,9 @@ public:
 
 
 bool loadObj(std::string path); 
-std::vector<point3D> getVertices(); 
-std::vector<point3D> getNormals(); 
+void getVertices(); 
+void getNormals();
+void getFaces();
 std::vector<std::string> objSplit(std::string root, char delim); 
 
 class Object {

@@ -21,7 +21,7 @@
 #include <time.h>
 #include "Target.h"						//Target Objects
 #include "Enemy.h"
-#include "objLoad.h";
+#include "objLoad.h"
 #include <math.h> 	
 
 using namespace std; 
@@ -31,7 +31,8 @@ using namespace std;
 //vars to save mouse x/y coord
 int mouseX = 0, mouseY = 0;
 
-Object deer("car.obj");
+// Object car("car.obj");
+Object map("map.obj");
 
 float light_pos[] = {5,10,5,1};
 /*** CAMERA VARIABLES***/
@@ -634,174 +635,174 @@ void Draw3DScene(){
 			  lookAtPos->at(lookAtIndex)->x,lookAtPos->at(lookAtIndex)->y,lookAtPos->at(lookAtIndex)->z ,
 			  0,1,0);
 	glEnable(GL_TEXTURE_2D);
-	DrawFloor();
+	// DrawFloor();
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
 
 	glPushMatrix();
 		// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glTranslatef(-5, 5, 0);
-		glScalef(0.1, 0.1, 0.1);
-		deer.render();
+		// glTranslatef(-5, 5, 0);
+		// glScalef(0.1, 0.1, 0.1);
+		map.render();
 	glPopMatrix();
 	
-	glPushMatrix();
-		glTranslatef(side,up,0);
-		glTranslatef(24,1,23);
-		glRotatef(70, 0,1,0);
-		//glScalef(1.5,1.3,0.5);
-		s.glutSolidCube2(1);
-		glTranslatef(-1.3,0,-0.2);
-		glRotatef(60, 0,1,0);
-		s.glutSolidCube2(1);
-		glColor3f(0,1,0);
-	glPopMatrix();
+	// glPushMatrix();
+	// 	glTranslatef(side,up,0);
+	// 	glTranslatef(24,1,23);
+	// 	glRotatef(70, 0,1,0);
+	// 	//glScalef(1.5,1.3,0.5);
+	// 	s.glutSolidCube2(1);
+	// 	glTranslatef(-1.3,0,-0.2);
+	// 	glRotatef(60, 0,1,0);
+	// 	s.glutSolidCube2(1);
+	// 	glColor3f(0,1,0);
+	// glPopMatrix();
 
-	glPushMatrix();
-		glTranslatef(15.1,1,21);
-		glRotatef(10, 0,1,0);
-		//glScalef(3,1.3,0.5);
-		glBindTexture(GL_TEXTURE_2D, textures[3]);
-		s.glutSolidCube2(1);
-		glRotatef(13, 0,1,0);
-		glTranslatef(1.2,0,0);
-		glBindTexture(GL_TEXTURE_2D, textures[0]);
-		s.glutSolidCube2(1);
-		glRotatef(-15, 0,1,0);
-		glTranslatef(-2.2,0,1);
+	// glPushMatrix();
+	// 	glTranslatef(15.1,1,21);
+	// 	glRotatef(10, 0,1,0);
+	// 	//glScalef(3,1.3,0.5);
+	// 	glBindTexture(GL_TEXTURE_2D, textures[3]);
+	// 	s.glutSolidCube2(1);
+	// 	glRotatef(13, 0,1,0);
+	// 	glTranslatef(1.2,0,0);
+	// 	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	// 	s.glutSolidCube2(1);
+	// 	glRotatef(-15, 0,1,0);
+	// 	glTranslatef(-2.2,0,1);
 		
-		s.glutSolidCube2(1);
+	// 	s.glutSolidCube2(1);
 
-		glRotatef(40, 0,1,0);
-		glTranslatef(1.8,1,0);
-		s.glutSolidCube2(1);
-		glColor3f(0,1,0);
-	glPopMatrix();
+	// 	glRotatef(40, 0,1,0);
+	// 	glTranslatef(1.8,1,0);
+	// 	s.glutSolidCube2(1);
+	// 	glColor3f(0,1,0);
+	// glPopMatrix();
 
-	glPushMatrix();
-		glTranslatef(17,1,10);
-		glRotatef(70, 0,1,0);
-		glScalef(2,1.5,0.5);
-		glBindTexture(GL_TEXTURE_2D, textures[4]);
-		s.glutSolidCube2(1);
-		glScalef(0.5,1,2);
-		glRotatef(70, 0,1,0);
-		glTranslatef(1,0,1);
-		glBindTexture(GL_TEXTURE_2D, textures[5]);
-		s.glutSolidCube2(1);
-		glTranslatef(-0.5,0,1);
-		glBindTexture(GL_TEXTURE_2D, textures[0]);
-		s.glutSolidCube2(1);
+	// glPushMatrix();
+	// 	glTranslatef(17,1,10);
+	// 	glRotatef(70, 0,1,0);
+	// 	glScalef(2,1.5,0.5);
+	// 	glBindTexture(GL_TEXTURE_2D, textures[4]);
+	// 	s.glutSolidCube2(1);
+	// 	glScalef(0.5,1,2);
+	// 	glRotatef(70, 0,1,0);
+	// 	glTranslatef(1,0,1);
+	// 	glBindTexture(GL_TEXTURE_2D, textures[5]);
+	// 	s.glutSolidCube2(1);
+	// 	glTranslatef(-0.5,0,1);
+	// 	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	// 	s.glutSolidCube2(1);
 		
-		glColor3f(0,1,0);
-	glPopMatrix();
+	// 	glColor3f(0,1,0);
+	// glPopMatrix();
 
-	glPushMatrix();
-		glColor3f(1,0,0);
-		glTranslatef(17,1, 3);
-		glRotatef(120, 0,1,0);
-		glScalef(3,1.3,3);
-		s.glutSolidCube2(1);
-	glPopMatrix();
+	// glPushMatrix();
+	// 	glColor3f(1,0,0);
+	// 	glTranslatef(17,1, 3);
+	// 	glRotatef(120, 0,1,0);
+	// 	glScalef(3,1.3,3);
+	// 	s.glutSolidCube2(1);
+	// glPopMatrix();
 
-	glPushMatrix();
-		glBindTexture(GL_TEXTURE_2D, textures[5]);
-		glColor3f(1,0,0);
-		glTranslatef(12,1, 8);
-		glRotatef(120, 0,1,0);
-		glScalef(1,1,1);
-		s.glutSolidCube2(1);
-		glTranslatef(1.3,0,1);
-		s.glutSolidCube2(1);
-		glTranslatef(-2,0,0);
-		s.glutSolidCube2(1);
-		glBindTexture(GL_TEXTURE_2D, textures[0]);
-	glPopMatrix();
+	// glPushMatrix();
+	// 	glBindTexture(GL_TEXTURE_2D, textures[5]);
+	// 	glColor3f(1,0,0);
+	// 	glTranslatef(12,1, 8);
+	// 	glRotatef(120, 0,1,0);
+	// 	glScalef(1,1,1);
+	// 	s.glutSolidCube2(1);
+	// 	glTranslatef(1.3,0,1);
+	// 	s.glutSolidCube2(1);
+	// 	glTranslatef(-2,0,0);
+	// 	s.glutSolidCube2(1);
+	// 	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	// glPopMatrix();
 
-	glPushMatrix();
-		glColor3f(1,0,0);
-		glTranslatef(10.5,1, 15);
-		glRotatef(120, 0,1,0);
-		glScalef(1,1,1);
-		glutSolidTeapot(1);
-		s.glutSolidCube2(1);
-		glTranslatef(1.3,0,1);
-		s.glutSolidCube2(1);
-		glTranslatef(-2,0,0);
-		s.glutSolidCube2(1);
-	glPopMatrix();
-
-
-	glPushMatrix();
-		glColor3f(1,0,0);
-		glTranslatef(30,1, 30);
-		glRotatef(30, 0,1,0);
-		glScalef(1,1,1);
-		glBindTexture(GL_TEXTURE_2D, textures[0]);
-		s.glutSolidCube2(1);
-
-		glRotatef(-20, 0,1,0);
-		glTranslatef(1,0,0);
-		s.glutSolidCube2(1);
-		glTranslatef(1,0,0);
-		glRotatef(15, 0,1,0);
-
-		s.glutSolidCube2(1);
-		glTranslatef(0,0, -2);
-		glBindTexture(GL_TEXTURE_2D, textures[3]);
-		s.glutSolidCube2(1);
-		glRotatef(-40, 0,1,0);
-		glTranslatef(1,0,0 );
-		glBindTexture(GL_TEXTURE_2D, textures[4]);
-		s.glutSolidCube2(1);
-		glTranslatef(1,0, -1);
-		s.glutSolidCube2(1);
-
-		glRotatef(120, 0,1,0);
-		glTranslatef(2,0,0);
-		s.glutSolidCube2(1);
-		glTranslatef(-3,0,1);
-		glRotatef(-45, 0,1,0);
-		s.glutSolidCube2(1);
-		glTranslatef(0,0, -2);
-		glBindTexture(GL_TEXTURE_2D, textures[0]);
-		s.glutSolidCube2(1);
-		glRotatef(-40, 0,1,0);
-		glTranslatef(1,0,0 );
-		s.glutSolidCube2(1);
-
-		glTranslatef(1,0, -1);
-		s.glutSolidCube2(1);
-	glPopMatrix();
+	// glPushMatrix();
+	// 	glColor3f(1,0,0);
+	// 	glTranslatef(10.5,1, 15);
+	// 	glRotatef(120, 0,1,0);
+	// 	glScalef(1,1,1);
+	// 	glutSolidTeapot(1);
+	// 	s.glutSolidCube2(1);
+	// 	glTranslatef(1.3,0,1);
+	// 	s.glutSolidCube2(1);
+	// 	glTranslatef(-2,0,0);
+	// 	s.glutSolidCube2(1);
+	// glPopMatrix();
 
 
-	glPushMatrix();
-		glBindTexture(GL_TEXTURE_2D, textures[5]);
-		glColor3f(1,0,0);
-		glTranslatef(30,1, 32);
-		glRotatef(30, 0,1,0);
-		glScalef(1,1,1);
-		glBindTexture(GL_TEXTURE_2D, textures[4]);
-		s.glutSolidCube2(1);
+	// glPushMatrix();
+	// 	glColor3f(1,0,0);
+	// 	glTranslatef(30,1, 30);
+	// 	glRotatef(30, 0,1,0);
+	// 	glScalef(1,1,1);
+	// 	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	// 	s.glutSolidCube2(1);
 
-		glTranslatef(1,0,1);
-		glScalef(1,1,1);
-		s.glutSolidCube2(1);
+	// 	glRotatef(-20, 0,1,0);
+	// 	glTranslatef(1,0,0);
+	// 	s.glutSolidCube2(1);
+	// 	glTranslatef(1,0,0);
+	// 	glRotatef(15, 0,1,0);
 
-		glTranslatef(-2,0, -2);
-		glScalef(1,1,1);
-		glBindTexture(GL_TEXTURE_2D, textures[0]);
-		s.glutSolidCube2(1);
-		glTranslatef(0.25,1, 1);
-		glRotatef(30, 0,1,0);
-		glScalef(1,1,1);
-		glBindTexture(GL_TEXTURE_2D, textures[5]);
-		s.glutSolidCube2(1);
-		glTranslatef(3,-1, 5);
-		glRotatef(30, 0,1,0);
-		glScalef(1,1,1);
-		glBindTexture(GL_TEXTURE_2D, textures[5]);
-		s.glutSolidCube2(1);
-	glPopMatrix();
+	// 	s.glutSolidCube2(1);
+	// 	glTranslatef(0,0, -2);
+	// 	glBindTexture(GL_TEXTURE_2D, textures[3]);
+	// 	s.glutSolidCube2(1);
+	// 	glRotatef(-40, 0,1,0);
+	// 	glTranslatef(1,0,0 );
+	// 	glBindTexture(GL_TEXTURE_2D, textures[4]);
+	// 	s.glutSolidCube2(1);
+	// 	glTranslatef(1,0, -1);
+	// 	s.glutSolidCube2(1);
+
+	// 	glRotatef(120, 0,1,0);
+	// 	glTranslatef(2,0,0);
+	// 	s.glutSolidCube2(1);
+	// 	glTranslatef(-3,0,1);
+	// 	glRotatef(-45, 0,1,0);
+	// 	s.glutSolidCube2(1);
+	// 	glTranslatef(0,0, -2);
+	// 	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	// 	s.glutSolidCube2(1);
+	// 	glRotatef(-40, 0,1,0);
+	// 	glTranslatef(1,0,0 );
+	// 	s.glutSolidCube2(1);
+
+	// 	glTranslatef(1,0, -1);
+	// 	s.glutSolidCube2(1);
+	// glPopMatrix();
+
+
+	// glPushMatrix();
+	// 	glBindTexture(GL_TEXTURE_2D, textures[5]);
+	// 	glColor3f(1,0,0);
+	// 	glTranslatef(30,1, 32);
+	// 	glRotatef(30, 0,1,0);
+	// 	glScalef(1,1,1);
+	// 	glBindTexture(GL_TEXTURE_2D, textures[4]);
+	// 	s.glutSolidCube2(1);
+
+	// 	glTranslatef(1,0,1);
+	// 	glScalef(1,1,1);
+	// 	s.glutSolidCube2(1);
+
+	// 	glTranslatef(-2,0, -2);
+	// 	glScalef(1,1,1);
+	// 	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	// 	s.glutSolidCube2(1);
+	// 	glTranslatef(0.25,1, 1);
+	// 	glRotatef(30, 0,1,0);
+	// 	glScalef(1,1,1);
+	// 	glBindTexture(GL_TEXTURE_2D, textures[5]);
+	// 	s.glutSolidCube2(1);
+	// 	glTranslatef(3,-1, 5);
+	// 	glRotatef(30, 0,1,0);
+	// 	glScalef(1,1,1);
+	// 	glBindTexture(GL_TEXTURE_2D, textures[5]);
+	// 	s.glutSolidCube2(1);
+	// glPopMatrix();
 
 	//drawPlayer();
 	checkPlayerHit();
@@ -1425,7 +1426,7 @@ void ManageAmmo(){
 //Initialize variables and Hud images
 void init(void)
 {
-	deer = Object("car.obj");
+	// car = Object("car.obj");
 
 	
 	images[0] = LoadPPM("HUD/h1.ppm", &width, &height, &max2);
@@ -1547,13 +1548,13 @@ void init(void)
 
 
 
-	glEnable(GL_FOG); 
-	glFogi(GL_FOG_MODE, GL_EXP);
-	glFogfv(GL_FOG_COLOR, fogColor);  
-	glFogf(GL_FOG_DENSITY, density); 
-	glHint(GL_FOG_HINT, GL_NICEST); 
-	glFogf(GL_FOG_START,1);
-	glFogf(GL_FOG_END,45);
+	// glEnable(GL_FOG); 
+	// glFogi(GL_FOG_MODE, GL_EXP);
+	// glFogfv(GL_FOG_COLOR, fogColor);  
+	// glFogf(GL_FOG_DENSITY, density); 
+	// glHint(GL_FOG_HINT, GL_NICEST); 
+	// glFogf(GL_FOG_START,1);
+	// glFogf(GL_FOG_END,45);
 
 
 	//printf("Stage Size: %i\n", stages->size() );
@@ -1643,12 +1644,12 @@ void checkClearedStage(){
 void display(void)
 {
 
-	glPushMatrix();
-		// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glTranslatef(-5, 5, 0);
-		glScalef(0.1, 0.1, 0.1);
-		deer.render();
-	glPopMatrix();
+	// glPushMatrix();
+	// 	// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	// 	glTranslatef(-5, 5, 0);
+	// 	glScalef(0.1, 0.1, 0.1);
+	// 	car.render();
+	// glPopMatrix();
 
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
